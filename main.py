@@ -12,6 +12,7 @@ def main():
         print('Enter N: ')
         constants.n = int(input())
     s = input()
+    
     for i in [';', ':', ',', '"', "'", '_', '@', '(', ')', '*', '&', '–']:
         s = s.replace(i, '')
     for i in ['!', '?', '...', '?!', '!?']:
