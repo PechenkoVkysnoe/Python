@@ -1,5 +1,4 @@
 import constants
-from constants import *
 
 
 def main():
