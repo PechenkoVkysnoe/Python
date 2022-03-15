@@ -18,7 +18,7 @@ def main():
             print("{} {}".format(top_of_gramms[0][i], top_of_gramms[1][i]))
     else:
         print('Top ', len(top_of_gramms[0]))
-        for i in range(len(top_of_gramms)):
+        for i in range(len(top_of_gramms[0])):
             print("{} {}".format(top_of_gramms[0][i], top_of_gramms[1][i]))
 
 
