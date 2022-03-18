@@ -2,17 +2,14 @@ from variables import N, K, PUNCTUATION_MARKS, END_MARKS
 
 
 def input_constants():
-    t = 42
+    choice = '42'
 
-    while t != 'Y' and t != 'N':
-        print("Do you want to enter N and K, enter 'Y/N'")
-        t = input()
+    while choice != 'Y' and choice != 'N':
+        choice = input("Do you want to enter N and K, enter 'Y/N'\n")
 
-    if t == 'Y':
-        print('Enter K: ')
-        k = int(input())
-        print('Enter N: ')
-        n = int(input())
+    if choice == 'Y':
+        k = int(input('Enter K:\n'))
+        n = int(input('Enter N:\n'))
     else:
         k = K
         n = N
@@ -21,8 +18,7 @@ def input_constants():
 
 
 def input_text():
-    print("Enter text")
-    text = input()
+    text = input("Enter text\n")
 
     return text
 
@@ -53,44 +49,47 @@ def abbreviation(text):
     return text
 
 
-def average_median(text):
+def get_number_word_sentence(text):
     list_point = []
 
     for i in range(len(text)):
         if text[i] == '.':
             list_point.append(i)
 
-    list_word_sentence = []
+    number_of_word_in_sentences = []
 
     for i in range(len(list_point) - 1):
-        list_word_sentence.append(text.count(' ', list_point[i], list_point[i + 1]) - 1)
+        number_of_word_in_sentences.append(text.count(' ', list_point[i], list_point[i + 1]) - 1)
 
-    average = sum(list_word_sentence) / len(list_word_sentence)
-    median = sorted(list_word_sentence)[len(list_word_sentence) // 2]
+    return number_of_word_in_sentences
 
-    return average, median
+
+def get_median(text):
+    number_of_word_in_sentences = get_number_word_sentence(text)
+
+    median = sorted(number_of_word_in_sentences)[len(number_of_word_in_sentences) // 2]
+
+    return median
+
+
+def get_average(text):
+    number_of_word_in_sentences = get_number_word_sentence(text)
+
+    average = sum(number_of_word_in_sentences) / len(number_of_word_in_sentences)
+
+    return average
 
 
 def number_word(text):
-    list_space = []
-
     for i in ['.']:
         text = text.replace(i, '')
 
-    text = ' '.join(text.split())
-    text = ' ' + text + ' '
-
+    words = text.split()
     word_dict = {}
 
-    for i in range(len(text)):
-        if text[i] == ' ':
-            list_space.append(i)
+    for i in range(len(words)):
+        word_dict[words[i]] = words.count(words[i])
 
-    for i in range(len(list_space) - 1):
-        if text[list_space[i] + 1:list_space[i + 1]] in word_dict:
-            word_dict[text[list_space[i] + 1:list_space[i + 1]]] += 1
-        else:
-            word_dict[text[list_space[i] + 1:list_space[i + 1]]] = 1
     return word_dict
 
 
