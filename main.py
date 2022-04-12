@@ -15,10 +15,12 @@ def main():
     top_of_grams = top_grams(text, n)
     if len(top_of_grams[0]) >= k:
         print(f"Top {k}")
+
         for i in range(k):
             print(f"{top_of_grams[0][i]} {top_of_grams[1][i]}")
     else:
         print(f"Top {len(top_of_grams[0])}")
+
         for i in range(len(top_of_grams[0])):
             print(f"{top_of_grams[0][i]} {top_of_grams[1][i]}")
 

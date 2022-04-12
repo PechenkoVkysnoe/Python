@@ -1,4 +1,4 @@
-from variables import N, K, PUNCTUATION_MARKS, END_MARKS
+from variables import N, K, PUNCTUATION_MARKS, END_MARKS, MR_CONST, MRS_CONST
 
 
 def input_constants():
@@ -39,11 +39,11 @@ def abbreviation(text):
             text = text[0:i] + ' ' + text[i + 1:]
 
     for i in range(len(text) - 4):
-        if text[i:i + 3] == ('mr.' or 'Mr.'):
+        if text[i:i + 3] == MR_CONST:
             text = text[0:i + 2] + ' ' + text[i + 3:]
 
     for i in range(len(text) - 5):
-        if text[i:i + 4] == ('mrs.' or 'Mrs.'):
+        if text[i:i + 4] == MRS_CONST:
             text = text[0:i + 3] + ' ' + text[i + 4:]
 
     return text
