@@ -25,6 +25,9 @@ c1=la.Yaml.dumps(hello)
 c2=la.Yaml.loads(c1)
 print(c2.__code__.co_consts)
 c2()
+
+v1=st.Toml.dumps(hello)
+print(v1)
 #c=st.Toml.dumps(my_number)
 if __name__ == '__main__':
     main()

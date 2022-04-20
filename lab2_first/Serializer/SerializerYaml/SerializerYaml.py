@@ -48,8 +48,8 @@ def serialize(obj):
 
     elif isinstance(obj, types.CodeType):
         return serialize_code(obj)
-    '''elif inspect.isclass(obj):
-        return serialize_class(obj, indent, new_indent)'''
+    elif inspect.isclass(obj):
+        return serialize_class(obj)
 
     '''elif isinstance(obj, types.CodeType):
         return serialize_code(obj, indent, new_indent)
@@ -76,29 +76,29 @@ def serialize(obj):
 
     return result'''
 
-'''def serialize_class(obj, indent, new_indent):
+def serialize_class(obj):
     class_dict = {
         "class_type": {
-            "__name__": get_name_class(obj, indent, new_indent),
-            "__bases__": tuple(get_bases_class(obj, indent, new_indent)),
-            "__code__": get_code_class(obj, indent, new_indent)
+            "__name__": get_name_class(obj),
+            "__bases__": tuple(get_bases_class(obj)),
+            "__code__": get_code_class(obj)
         }
     }
 
-    result = serialize_dict(class_dict, indent, new_indent)
+    result = serialize_dict(class_dict)
 
-    return result'''
+    return result
 
-'''def get_name_class(obj, indent, new_indent):
-    result = serialize(obj.__name__, indent, new_indent)
+def get_name_class(obj):
+    result = serialize(obj.__name__)
 
-    return result'''
+    return result
 
-'''def get_bases_class(obj, indent, new_indent):
-    data = serialize_list(obj.__bases__, indent, new_indent)
+def get_bases_class(obj):
+    data = serialize_list(obj.__bases__)
     result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]
 
-    return result'''
+    return result
 
 '''def serialize_dict_class(obj, indent, new_indent=0):
     if len(obj) == 0:
@@ -124,15 +124,15 @@ def serialize(obj):
 
     return result'''
 
-'''def get_code_class(obj, indent, new_indent):
+def get_code_class(obj):
     if obj.__name__ != 'object':
-        data = serialize_dict_class(dict(obj.__dict__), indent, new_indent)
+        data = serialize_dict(dict(obj.__dict__))
         result = Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]
 
     else:
         result = {}
 
-    return result'''
+    return result
 
 
 def get_globals(obj):
@@ -178,10 +178,7 @@ def serialize_code(obj: types.CodeType):
 
 def serialize_function(obj: types.FunctionType):
     glob = get_globals(obj)
-    co = []
-    for el in obj.__code__.co_consts:
-        co.append(serialize(el))
-    co = tuple(co)
+
     function_dict = {
         "function_type": {
             "__globals__": glob,

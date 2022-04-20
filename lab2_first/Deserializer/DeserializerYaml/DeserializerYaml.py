@@ -5,8 +5,13 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 
 
 def deserialize(obj):
-    if isinstance(obj, (int, float, bool,str)) or obj is None:
+    if isinstance(obj, (int, float, bool)) or obj is None:
         return obj
+    if isinstance(obj,str):
+        if str=='None':
+            return None
+        else:
+            return obj
     elif isinstance(obj,list):
         return deserialize_list(obj)
     elif isinstance(obj,tuple):
