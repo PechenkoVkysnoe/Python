@@ -104,7 +104,7 @@ def get_globals(func):
 
     for global_var in func.__code__.co_names:
 
-        if func.__name__==global_var:
+        if func.__name__ == global_var:
             continue
 
         if global_var in func.__globals__:
@@ -135,5 +135,5 @@ def serialize_iterable(obj):
 
 
 def serialize_code(obj):
-    result=serialize_function(FunctionType(obj, {}))
+    result = serialize_function(FunctionType(obj, {}))
     return result

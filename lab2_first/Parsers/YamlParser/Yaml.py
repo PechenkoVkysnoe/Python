@@ -1,6 +1,6 @@
 import yaml
-from Serializer.SerializerToml.SerializerToml import serialize
-from Deserializer.DeserializerToml.DeserializerToml import deserialize
+from Serializer.SerializerYaml.SerializerYaml import serialize
+from Deserializer.DeserializerYaml.DeserializerYaml import deserialize
 
 
 class Yaml:
@@ -19,12 +19,12 @@ class Yaml:
     @staticmethod
     def load(f):
         with open(f, 'r') as file:
-            data = yaml.load(file, Loader=yaml.FullLoader)
+            data = yaml.unsafe_load(file)
         result = deserialize(data)
         return result
 
     @staticmethod
     def loads(s):
-        data = yaml.load(s, Loader=yaml.FullLoader)
+        data=yaml.unsafe_load(s)
         result = deserialize(data)
         return result

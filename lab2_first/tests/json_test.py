@@ -7,6 +7,9 @@ class TestFunction(TestCase):
     def setUp(self):
         self.my_parser = SerializerFactory.Serializer.create_serializer('json')
         self.file = 'temp.json'
+    def test_serializer_factory(self):
+        with self.assertRaises(ValueError):
+            self.my_parser = SerializerFactory.Serializer.create_serializer('abracadabra')
 
     def test_parser_obj(self):
         self.my_parser.Json.dump(my_number, self.file, indent=2)

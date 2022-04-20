@@ -1,5 +1,5 @@
 from unittest import TestCase
-from tests.test_things import my_number, my_list, my_dict, fib, hello, Baby
+from tests.test_things import my_number, my_list, my_dict, fib, hello, Baby, mathematics
 from Serializer import SerializerFactory
 
 
@@ -26,9 +26,13 @@ class TestFunction(TestCase):
         result = self.my_parser.Yaml.load(self.file)
         self.assertEqual(result(10), fib(10))
 
-        data = self.my_parser.Yaml.dumps(hello)
+        '''data = self.my_parser.Yaml.dumps(hello)
         result = self.my_parser.Yaml.loads(data)
-        self.assertEqual(result(), hello())
+        self.assertEqual(result(), hello())'''
+
+        self.my_parser.Yaml.dump(mathematics, self.file)
+        result = self.my_parser.Yaml.load(self.file)
+        self.assertEqual(result(4.2, 2.4), mathematics(4.2, 2.4))
 
     def test_parser_class(self):
         self.my_parser.Yaml.dump(Baby, self.file)
