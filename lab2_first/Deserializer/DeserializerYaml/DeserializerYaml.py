@@ -5,13 +5,19 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 
 
 def deserialize(obj):
-    if isinstance(obj, (int, float, list, bool)) or obj is None:
+    if isinstance(obj, (int, float, bool,str)) or obj is None:
         return obj
-    elif isinstance(obj,dict):
+    elif isinstance(obj,list):
+        return deserialize_list(obj)
+    elif isinstance(obj,tuple):
+        return deserialize_tuple(obj)
+    elif isinstance(obj, dict):
         if 'function_type' in obj:
             return deserialize_function(obj)
+        if 'type_code' in obj:
+            return deserialize_code(obj)
         else:
-            return obj
+            return deserialize_dict(obj)
     else:
         raise TypeError
 
@@ -27,37 +33,13 @@ def deserialize_class(cls):
         return result
 
 
-def deserialize_dict(s, index):
+def deserialize_dict(obj):
     result = {}
-    in_key = True
-    now_key = None
-    index += 1
 
-    while s[index] != '}':
-        if s[index] in EXTRA_CHARACTERS_IN_DICT:
-            index += 1
+    for key in obj:
+        result[key] = deserialize(obj[key])
 
-        elif s[index] == QUOTATION_MARK and in_key:
-            now_key, index = deserialize(s, index)
-            result[now_key] = None
-            in_key = False
-
-        else:
-            value, index = deserialize(s, index)
-            result[now_key] = value
-            in_key = True
-
-    if 'function_type' in result:
-        result = deserialize_function(result)
-
-    elif 'class_type' in result:
-        result = deserialize_class(result)
-
-    elif 'type_code' in result:
-        result = deserialize_code(result)
-    elif 'instance_type' in result:
-        result = deserialize_instance(result)
-    return result, index + 1
+    return result
 
 
 def deserialize_instance(obj):
@@ -82,7 +64,7 @@ def get_code(obj):
               obj['co_stacksize'],
               obj['co_flags'],
               bytes(obj['co_code']),
-              tuple(obj['co_consts']),
+              deserialize(tuple(obj['co_consts'])),
               tuple(obj['co_names']),
               tuple(obj['co_varnames']),
               obj['co_filename'],
@@ -119,23 +101,18 @@ def deserialize_function(obj: dict):
     return result
 
 
-
-
-def deserialize_list(s, index):
+def deserialize_list(obj):
     result = []
-    index += 1
 
-    while s[index] != ']':
-        if s[index] in EXTRA_CHARACTERS_IN_LIST:
-            index += 1
+    for el in obj:
+        result.append(deserialize(el))
 
-        else:
-            obj, index = deserialize(s, index)
+    return result
 
-            result.append(obj)
+def deserialize_tuple(obj):
+    result = tuple(deserialize_list(obj))
 
-    return result, index + 1
-
+    return result
 
 def deserialize_number(s: str, index):
     end = index

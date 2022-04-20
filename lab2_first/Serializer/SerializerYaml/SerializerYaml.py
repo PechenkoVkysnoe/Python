@@ -15,8 +15,6 @@ def serialize(obj):
         return FALSE
     '''
 
-
-
     '''elif isinstance(obj, str):
         if obj[0] == QUOTATION_MARK:
             result = obj
@@ -30,18 +28,28 @@ def serialize(obj):
     elif isinstance(obj, list) or isinstance(obj, tuple) or isinstance(obj, set) or isinstance(obj, frozenset):
         return serialize_list(obj, indent, new_indent)
     '''
-    if isinstance(obj, (int, float, list, dict,bool)) or obj is None:
+    if isinstance(obj, (int, float, str, bool)) or obj is None:
         return obj
+
+    elif isinstance(obj, list):
+        return serialize_list(obj)
+
+    elif isinstance(obj, tuple):
+        return serialize_tuple(obj)
+
+    elif isinstance(obj, dict):
+        return serialize_dict(obj)
+
     elif inspect.isfunction(obj):
         return serialize_function(obj)
+
     elif inspect.ismethod(obj):
         return serialize_function(obj)
+
     elif isinstance(obj, types.CodeType):
         return serialize_code(obj)
     '''elif inspect.isclass(obj):
         return serialize_class(obj, indent, new_indent)'''
-
-
 
     '''elif isinstance(obj, types.CodeType):
         return serialize_code(obj, indent, new_indent)
@@ -68,7 +76,6 @@ def serialize(obj):
 
     return result'''
 
-
 '''def serialize_class(obj, indent, new_indent):
     class_dict = {
         "class_type": {
@@ -82,19 +89,16 @@ def serialize(obj):
 
     return result'''
 
-
 '''def get_name_class(obj, indent, new_indent):
     result = serialize(obj.__name__, indent, new_indent)
 
     return result'''
-
 
 '''def get_bases_class(obj, indent, new_indent):
     data = serialize_list(obj.__bases__, indent, new_indent)
     result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]
 
     return result'''
-
 
 '''def serialize_dict_class(obj, indent, new_indent=0):
     if len(obj) == 0:
@@ -119,7 +123,6 @@ def serialize(obj):
         result += ' ' * (new_indent - indent) + '}'
 
     return result'''
-
 
 '''def get_code_class(obj, indent, new_indent):
     if obj.__name__ != 'object':
@@ -167,7 +170,7 @@ def serialize_code(obj: types.CodeType):
             "co_cellvars": obj.co_cellvars
         }
     }
-    result=code_dict
+    result = code_dict
     '''result = serialize_dict(code_dict, indent, new_indent)'''
 
     return result
@@ -175,10 +178,10 @@ def serialize_code(obj: types.CodeType):
 
 def serialize_function(obj: types.FunctionType):
     glob = get_globals(obj)
-    co=[]
+    co = []
     for el in obj.__code__.co_consts:
         co.append(serialize(el))
-    co=tuple(co)
+    co = tuple(co)
     function_dict = {
         "function_type": {
             "__globals__": glob,
@@ -192,7 +195,7 @@ def serialize_function(obj: types.FunctionType):
                     "co_stacksize": obj.__code__.co_stacksize,
                     "co_flags": obj.__code__.co_flags,
                     "co_code": list(obj.__code__.co_code),
-                    "co_consts": obj.__code__.co_consts,
+                    "co_consts": serialize(obj.__code__.co_consts),
                     "co_names": obj.__code__.co_names,
                     "co_varnames": obj.__code__.co_varnames,
                     "co_filename": obj.__code__.co_filename,
@@ -205,7 +208,7 @@ def serialize_function(obj: types.FunctionType):
             }
         }
     }
-    result=function_dict
+    result = function_dict
     '''result = serialize_dict(function_dict, indent, new_indent)'''
 
     return result
@@ -230,18 +233,25 @@ def serialize_function(obj: types.FunctionType):
     return result'''
 
 
-'''def serialize_list(obj, indent, new_indent=0):
-    if len(obj) == 0:
-        return '[]'
+def serialize_list(obj):
+    result = []
 
-    else:
-        result = '[\n'
-        new_indent += indent
+    for el in obj:
+        result.append(serialize(el))
 
-        for el in obj[:len(obj) - 1]:
-            result += ' ' * new_indent + serialize(el, indent, new_indent) + ',\n'
+    return result
 
-        result += ' ' * new_indent + serialize(obj[len(obj) - 1], indent, new_indent) + '\n'
-        result += ' ' * (new_indent - indent) + ']'
 
-    return result'''
+def serialize_tuple(obj):
+    result = tuple(serialize_list(obj))
+
+    return result
+
+
+def serialize_dict(obj):
+    result = {}
+
+    for key in obj:
+        result[key] = serialize(obj[key])
+
+    return result
