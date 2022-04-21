@@ -7,20 +7,24 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 def deserialize(obj):
     if isinstance(obj, (int, float, bool)) or obj is None:
         return obj
-    if isinstance(obj,str):
-        if str=='None':
+    if isinstance(obj, str):
+        if str == 'None':
             return None
         else:
             return obj
-    elif isinstance(obj,list):
+    elif isinstance(obj, list):
         return deserialize_list(obj)
-    elif isinstance(obj,tuple):
+    elif isinstance(obj, tuple):
         return deserialize_tuple(obj)
     elif isinstance(obj, dict):
         if 'function_type' in obj:
             return deserialize_function(obj)
-        if 'type_code' in obj:
+        elif 'type_code' in obj:
             return deserialize_code(obj)
+        elif 'class_type' in obj:
+            return deserialize_class(obj)
+        elif 'instance_type' in obj:
+            return deserialize_instance(obj)
         else:
             return deserialize_dict(obj)
     else:
@@ -32,8 +36,10 @@ def deserialize_class(cls):
         return object
 
     else:
-        result = type(cls['class_type']["__name__"], tuple(cls['class_type']["__bases__"]),
-                      cls['class_type']["__code__"])
+        x = deserialize(cls['class_type']["__bases__"])
+        y=deserialize(cls['class_type']["__code__"])
+        result = type(cls['class_type']["__name__"], deserialize(cls['class_type']["__bases__"]),
+                      deserialize(cls['class_type']["__code__"]))
 
         return result
 
@@ -90,7 +96,7 @@ def deserialize_code(obj: dict):
 
 def deserialize_function(obj: dict):
     my_code = get_code(obj['function_type']['__code__']['code_type'])
-    result = types.FunctionType(types.CodeType(*my_code), obj['function_type']['__globals__'],
+    result = types.FunctionType(types.CodeType(*my_code), deserialize(obj['function_type']['__globals__']),
                                 obj['function_type']['__name__'])
 
     for key in obj['function_type']['__globals__']:
@@ -114,34 +120,23 @@ def deserialize_list(obj):
 
     return result
 
+
 def deserialize_tuple(obj):
     result = tuple(deserialize_list(obj))
 
     return result
 
-def deserialize_number(s: str, index):
-    end = index
+def deserialize_instance(obj):
+    def __init__(self):
+        pass
 
-    while end != len(s) and (s[end].isdigit() or s[end] == '.' or s[end] == '-'):
-        end += 1
-
-    try:
-        result = int(s[index:end])
-
-    except ValueError:
-        try:
-            result = float(s[index:end])
-
-        except ValueError:
-            raise ValueError
-
-    return result, end + 1
-
-
-def deserialize_string(s, index):
-    end = index
-
-    while s[end] != QUOTATION_MARK:
-        end += 1
-
-    return s[index:end], end + 1
+    cls = deserialize(obj['instance_type']['__class__'])
+    temp = cls.__init__
+    cls.__init__ = __init__
+    result = deserialize(obj['instance_type']['__class__'])
+    o=obj['instance_type']['__dict__']
+    print(result.__dict__)
+    #result.__dict__ = obj['instance_type']['__dict__']
+    result.__init__ = temp
+    #result.__class__.__init__ = temp
+    return result

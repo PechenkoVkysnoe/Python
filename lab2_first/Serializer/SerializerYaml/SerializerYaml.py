@@ -5,6 +5,7 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 
 
 def serialize(obj):
+
     '''if obj is None:
         return NULL
 
@@ -50,6 +51,11 @@ def serialize(obj):
         return serialize_code(obj)
     elif inspect.isclass(obj):
         return serialize_class(obj)
+    else:
+        try:
+            return serialize_instance(obj)
+        except TypeError:
+            raise TypeError
 
     '''elif isinstance(obj, types.CodeType):
         return serialize_code(obj, indent, new_indent)
@@ -76,6 +82,20 @@ def serialize(obj):
 
     return result'''
 
+
+def serialize_instance(obj):
+    data = {
+        'instance_type': {
+            '__class__': serialize(obj.__class__),
+            '__dict__': serialize(obj.__dict__),
+        }
+    }
+
+    result = data
+
+    return result
+
+
 def serialize_class(obj):
     class_dict = {
         "class_type": {
@@ -89,16 +109,19 @@ def serialize_class(obj):
 
     return result
 
+
 def get_name_class(obj):
     result = serialize(obj.__name__)
 
     return result
 
+
 def get_bases_class(obj):
     data = serialize_list(obj.__bases__)
-    result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]
-
+    '''result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]'''
+    result = data
     return result
+
 
 '''def serialize_dict_class(obj, indent, new_indent=0):
     if len(obj) == 0:
@@ -124,10 +147,23 @@ def get_bases_class(obj):
 
     return result'''
 
+
+def serialize_dict_class(obj):
+    result = {}
+
+    for key in obj:
+        if key in EXTRA_ATTRIBUTE_CLASS_CODE:
+            continue
+        result[key] = serialize(obj[key])
+
+    return result
+
+
 def get_code_class(obj):
     if obj.__name__ != 'object':
-        data = serialize_dict(dict(obj.__dict__))
-        result = Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]
+        data = serialize_dict_class(dict(obj.__dict__))
+        result = data
+        '''result = Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]'''
 
     else:
         result = {}
@@ -171,7 +207,6 @@ def serialize_code(obj: types.CodeType):
         }
     }
     result = code_dict
-    '''result = serialize_dict(code_dict, indent, new_indent)'''
 
     return result
 

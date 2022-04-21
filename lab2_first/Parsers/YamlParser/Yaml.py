@@ -25,6 +25,6 @@ class Yaml:
 
     @staticmethod
     def loads(s):
-        data=yaml.unsafe_load(s)
+        data = yaml.unsafe_load(s)
         result = deserialize(data)
         return result

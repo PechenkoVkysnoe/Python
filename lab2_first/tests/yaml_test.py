@@ -40,3 +40,7 @@ class TestFunction(TestCase):
         result = data('Misha', 'Grigorchuk')
         test_result = Baby('Misha', 'Grigorchuk')
         self.assertEqual(result.get_full_name(), test_result.get_full_name())
+
+        '''self.my_parser.Yaml.dump(result, self.file)
+        data = self.my_parser.Yaml.load(self.file)
+        self.assertEqual(result.get_full_name(), data.get_full_name())'''
