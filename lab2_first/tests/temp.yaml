@@ -1,135 +1,121 @@
-__init__:
-  __args__:
-    co_argcount: 3
-    co_cellvars: []
-    co_code:
-    - 116
-    - 0
-    - 160
-    - 1
-    - 124
-    - 0
-    - 124
-    - 2
-    - 161
-    - 2
-    - 1
-    - 0
-    - 124
-    - 1
-    - 124
-    - 0
-    - 95
-    - 2
-    - 100
-    - 0
-    - 83
-    - 0
-    co_consts:
-    - None
-    co_filename: /home/pechenkovkysnoe/PycharmProjects/lab2_first/tests/test_things.py
-    co_firstlineno: 38
-    co_flags: 67
-    co_freevars: []
-    co_kwonlyargcount: 0
-    co_lnotab:
-    - 0
-    - 1
-    - 12
-    - 1
-    co_name: __init__
-    co_names:
-    - Dad
-    - __init__
-    - first_name
-    co_nlocals: 3
-    co_posonlyargcount: 0
-    co_stacksize: 4
-    co_varnames:
-    - self
-    - first_name
-    - second_name
+function_type:
+  __code__:
+    code_type:
+      co_argcount: 2
+      co_cellvars: !!python/tuple []
+      co_code:
+      - 116
+      - 0
+      - 124
+      - 0
+      - 124
+      - 1
+      - 23
+      - 0
+      - 131
+      - 1
+      - 1
+      - 0
+      - 116
+      - 0
+      - 124
+      - 0
+      - 124
+      - 1
+      - 24
+      - 0
+      - 131
+      - 1
+      - 1
+      - 0
+      - 116
+      - 0
+      - 124
+      - 0
+      - 124
+      - 1
+      - 27
+      - 0
+      - 131
+      - 1
+      - 1
+      - 0
+      - 116
+      - 0
+      - 124
+      - 0
+      - 124
+      - 1
+      - 20
+      - 0
+      - 131
+      - 1
+      - 1
+      - 0
+      - 116
+      - 0
+      - 116
+      - 1
+      - 160
+      - 2
+      - 116
+      - 3
+      - 100
+      - 1
+      - 25
+      - 0
+      - 161
+      - 1
+      - 131
+      - 1
+      - 1
+      - 0
+      - 100
+      - 0
+      - 83
+      - 0
+      co_consts: !!python/tuple
+      - None
+      - '-5'
+      co_filename: /home/pechenkovkysnoe/PycharmProjects/python/lab2_first/tests/test_things.py
+      co_firstlineno: 21
+      co_flags: 67
+      co_freevars: !!python/tuple []
+      co_kwonlyargcount: 0
+      co_lnotab:
+      - 0
+      - 1
+      - 12
+      - 1
+      - 12
+      - 1
+      - 12
+      - 1
+      - 12
+      - 1
+      co_name: mathematics
+      co_names: !!python/tuple
+      - print
+      - math
+      - sin
+      - my_dict
+      co_nlocals: 2
+      co_posonlyargcount: 0
+      co_stacksize: 5
+      co_varnames: !!python/tuple
+      - a
+      - b
   __globals__:
-    Dad:
-      __init__:
-        __args__:
-          co_argcount: 2
-          co_cellvars: []
-          co_code:
-          - 124
-          - 1
-          - 124
-          - 0
-          - 95
-          - 0
-          - 100
-          - 0
-          - 83
-          - 0
-          co_consts:
-          - None
-          co_filename: /home/pechenkovkysnoe/PycharmProjects/lab2_first/tests/test_things.py
-          co_firstlineno: 33
-          co_flags: 67
-          co_freevars: []
-          co_kwonlyargcount: 0
-          co_lnotab:
-          - 0
-          - 1
-          co_name: __init__
-          co_names:
-          - second_name
-          co_nlocals: 2
-          co_posonlyargcount: 0
-          co_stacksize: 2
-          co_varnames:
-          - self
-          - second_name
-        __globals__: {}
-        __name__: __init__
-        __type__: function_type
-      __name__: Dad
-      __type__: class_type
-  __name__: __init__
-  __type__: function_type
-__name__: Baby
-__type__: class_type
-get_full_name:
-  __args__:
-    co_argcount: 1
-    co_cellvars: []
-    co_code:
-    - 124
-    - 0
-    - 106
-    - 0
-    - 124
-    - 0
-    - 106
-    - 1
-    - 103
-    - 2
-    - 83
-    - 0
-    co_consts:
-    - None
-    co_filename: /home/pechenkovkysnoe/PycharmProjects/lab2_first/tests/test_things.py
-    co_firstlineno: 42
-    co_flags: 67
-    co_freevars: []
-    co_kwonlyargcount: 0
-    co_lnotab:
-    - 0
-    - 1
-    co_name: get_full_name
-    co_names:
-    - first_name
-    - second_name
-    co_nlocals: 1
-    co_posonlyargcount: 0
-    co_stacksize: 2
-    co_varnames:
-    - self
-  __globals__: {}
-  __name__: get_full_name
-  __type__: function_type
+    math: math
+    my_dict:
+      '-5': 228
+      '1':
+        '2': aaaaaaaaaaa
+      fd:
+      - - true
+        - - false
+          - 228
+        - pamagiti
+        - []
+      "\u0425\u0430\u043B\u044F\u0432\u0430": "\u043F\u0440\u0438\u0439\u0434\u0438"
+  __name__: mathematics

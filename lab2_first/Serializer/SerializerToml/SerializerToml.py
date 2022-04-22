@@ -114,7 +114,7 @@ def get_globals(func):
 
 
 def serialize_iterable(obj):
-    result = None
+    #result = None
 
     if isinstance(obj, list) or isinstance(obj, tuple):
         result = []

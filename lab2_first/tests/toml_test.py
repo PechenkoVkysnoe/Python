@@ -8,19 +8,6 @@ class TestFunction(TestCase):
         self.my_parser = SerializerFactory.Serializer.create_serializer('toml')
         self.file = 'temp.toml'
 
-    def test_parser_obj(self):
-        self.my_parser.Toml.dump(my_number, self.file)
-        result = self.my_parser.Toml.load(self.file)
-        self.assertEqual(result, my_number)
-
-        self.my_parser.Toml.dump(my_list, self.file)
-        result = self.my_parser.Toml.load(self.file)
-        self.assertEqual(result, my_list)
-
-        self.my_parser.Toml.dump(my_dict, self.file)
-        result = self.my_parser.Toml.load(self.file)
-        self.assertEqual(result, my_dict)
-
     def test_parser_function(self):
         data = self.my_parser.Toml.dumps(hello)
         result = self.my_parser.Toml.loads(data)

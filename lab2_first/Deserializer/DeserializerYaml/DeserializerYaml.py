@@ -5,7 +5,7 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 
 
 def deserialize(obj):
-    if isinstance(obj, (int, float, bool)) or obj is None:
+    if isinstance(obj, (int, float, bool)):
         return obj
     if isinstance(obj, str):
         if str == 'None':
@@ -37,7 +37,7 @@ def deserialize_class(cls):
 
     else:
         x = deserialize(cls['class_type']["__bases__"])
-        y=deserialize(cls['class_type']["__code__"])
+        y = deserialize(cls['class_type']["__code__"])
         result = type(cls['class_type']["__name__"], deserialize(cls['class_type']["__bases__"]),
                       deserialize(cls['class_type']["__code__"]))
 
@@ -48,7 +48,10 @@ def deserialize_dict(obj):
     result = {}
 
     for key in obj:
-        result[key] = deserialize(obj[key])
+        if obj[key] == "None":
+            result[key] = None
+        else:
+            result[key] = deserialize(obj[key])
 
     return result
 
@@ -116,7 +119,10 @@ def deserialize_list(obj):
     result = []
 
     for el in obj:
-        result.append(deserialize(el))
+        if el == "None":
+            result.append(None)
+        else:
+            result.append(deserialize(el))
 
     return result
 
@@ -126,6 +132,7 @@ def deserialize_tuple(obj):
 
     return result
 
+
 def deserialize_instance(obj):
     def __init__(self):
         pass
@@ -134,9 +141,9 @@ def deserialize_instance(obj):
     temp = cls.__init__
     cls.__init__ = __init__
     result = deserialize(obj['instance_type']['__class__'])
-    o=obj['instance_type']['__dict__']
+    o = obj['instance_type']['__dict__']
     print(result.__dict__)
-    #result.__dict__ = obj['instance_type']['__dict__']
+    # result.__dict__ = obj['instance_type']['__dict__']
     result.__init__ = temp
-    #result.__class__.__init__ = temp
+    # result.__class__.__init__ = temp
     return result

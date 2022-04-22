@@ -11,7 +11,12 @@ def hello():
         print('world')
 
     world()
+def fib(n):
+    if n == 0 or n == 1:
+        return 1
 
+    else:
+        return fib(n - 1) + fib(n - 2)
 my_number = 42
 my_list = [True, [False, 228], 'pamagiti', []]
 my_dict = {'1': {'2': 'aaaaaaaaaaa'}, '-5': 228, 'fd': [my_list]}
@@ -39,10 +44,12 @@ uy=Serializer.SerializerFactory.Serializer.create_serializer('json')
 la = Serializer.SerializerFactory.Serializer.create_serializer('yaml')
 '''c01=uy.Json.dumps(My)
 print(c01)'''
-
-c11=la.Yaml.dumps(Baby)
-
+def f9():
+    return 511111111111111111111111111111111111111111111111111111111111111111111111
+c11=la.Yaml.dumps(f9)
+print(c11)
 c21=la.Yaml.loads(c11)
+print(c21())
 print(c21.__bases__)
 #print(Baby.__bases__)
 print(c21.__init__.__globals__)

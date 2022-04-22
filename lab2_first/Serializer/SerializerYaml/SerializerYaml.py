@@ -14,9 +14,8 @@ def serialize(obj):
 
     elif obj is False:
         return FALSE
-    '''
 
-    '''elif isinstance(obj, str):
+    elif isinstance(obj, str):
         if obj[0] == QUOTATION_MARK:
             result = obj
         else:
@@ -29,9 +28,10 @@ def serialize(obj):
     elif isinstance(obj, list) or isinstance(obj, tuple) or isinstance(obj, set) or isinstance(obj, frozenset):
         return serialize_list(obj, indent, new_indent)
     '''
-    if isinstance(obj, (int, float, str, bool)) or obj is None:
+    if isinstance(obj, (int, float, str, bool)):
         return obj
-
+    elif obj==None:
+        return 'None'
     elif isinstance(obj, list):
         return serialize_list(obj)
 
@@ -195,7 +195,7 @@ def serialize_code(obj: types.CodeType):
             "co_stacksize": obj.co_stacksize,
             "co_flags": obj.co_flags,
             "co_code": list(obj.co_code),
-            "co_consts": obj.co_consts,
+            "co_consts": serialize(obj.co_consts),
             "co_names": obj.co_names,
             "co_varnames": obj.co_varnames,
             "co_filename": obj.co_filename,
@@ -213,7 +213,7 @@ def serialize_code(obj: types.CodeType):
 
 def serialize_function(obj: types.FunctionType):
     glob = get_globals(obj)
-
+    x=serialize(obj.__code__.co_consts)
     function_dict = {
         "function_type": {
             "__globals__": glob,
@@ -269,7 +269,11 @@ def serialize_list(obj):
     result = []
 
     for el in obj:
-        result.append(serialize(el))
+        if el is None:
+            result.append("None")
+
+        else:
+            result.append(serialize(el))
 
     return result
 
@@ -284,6 +288,10 @@ def serialize_dict(obj):
     result = {}
 
     for key in obj:
-        result[key] = serialize(obj[key])
+        if obj[key] is None:
+            result[key]("None")
+
+        else:
+            result[key] = serialize(obj[key])
 
     return result
