@@ -1,13 +1,10 @@
 import math
-
+import random
+t=5
 my_number = 42
 my_list = [True, [False, 228], 'pamagiti', []]
 my_dict = {'1': {'2': 'aaaaaaaaaaa'}, '-5': 228, 'fd': [my_list],'Халява':'прийди'}
 my_list2 = {}
-
-
-def fun(a=1):
-    return my_number + a
 
 
 def fib(n):
@@ -32,7 +29,7 @@ def hello():
     def world():
         print('world')
 
-    world()
+    return world()
 
 
 class Dad:
@@ -40,10 +37,21 @@ class Dad:
         self.second_name = second_name
 
 
+class Gender:
+    def __init__(self):
+        temp = random.randrange(0, 2, 1)
+        if temp == 0:
+            self.sex = 'Men'
+        else:
+            self.sex = 'Women'
+
+
 class Baby(Dad):
-    def __init__(self, first_name, second_name):
+    def __init__(self, first_name, second_name, gender):
         Dad.__init__(self, second_name)
         self.first_name = first_name
+        self.gender = gender
 
     def get_full_name(self):
         return [self.first_name, self.second_name]
+

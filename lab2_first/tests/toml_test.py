@@ -1,5 +1,5 @@
 from unittest import TestCase
-from tests.test_things import hello, Baby, fun, my_list2, my_number, my_list, fib, mathematics
+from tests.test_things import hello, Baby, my_list2, my_number, my_list, fib, mathematics,my_dict,Gender
 from Serializer import SerializerFactory
 
 
@@ -24,9 +24,11 @@ class TestFunction(TestCase):
     def test_parser_class(self):
         self.my_parser.Toml.dump(Baby, self.file)
         data = self.my_parser.Toml.load(self.file)
-        result = data('Misha', 'Grigorchuk')
-        test_result = Baby('Misha', 'Grigorchuk')
+        gender = Gender()
+        result = data('Misha', 'Grigorchuk',gender)
+        test_result = Baby('Misha', 'Grigorchuk',gender)
         self.assertEqual(result.get_full_name(), test_result.get_full_name())
+        self.assertEqual(result.gender.sex, test_result.gender.sex)
 
         self.my_parser.Toml.dump(result, self.file)
         data = self.my_parser.Toml.load(self.file)

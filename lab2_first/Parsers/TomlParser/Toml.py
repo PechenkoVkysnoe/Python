@@ -1,6 +1,4 @@
 import pytomlpp
-import Serializer.SerializerToml.SerializerToml
-import Deserializer.DeserializerToml.DeserializerToml
 import Serializer.SerializerYaml.SerializerYaml
 import Deserializer.DeserializerYaml.DeserializerYaml
 

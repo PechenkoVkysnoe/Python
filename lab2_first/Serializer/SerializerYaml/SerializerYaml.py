@@ -5,7 +5,6 @@ from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MAR
 
 
 def serialize(obj):
-
     '''if obj is None:
         return NULL
 
@@ -30,13 +29,12 @@ def serialize(obj):
     '''
     if isinstance(obj, (int, float, str, bool)):
         return obj
-    elif obj==None:
-        return 'None'
-    elif isinstance(obj, (list,tuple)):
-        return serialize_list(obj)
 
-    elif isinstance(obj, tuple):
-        return serialize_tuple(obj)
+    elif obj is None:
+        return 'None'
+
+    elif isinstance(obj, (list, tuple)):
+        return serialize_list(obj)
 
     elif isinstance(obj, dict):
         return serialize_dict(obj)
@@ -56,31 +54,6 @@ def serialize(obj):
             return serialize_instance(obj)
         except TypeError:
             raise TypeError
-
-    '''elif isinstance(obj, types.CodeType):
-        return serialize_code(obj, indent, new_indent)
-
-    elif inspect.ismethod(obj):
-        return serialize_function(obj, indent, new_indent)
-
-    else:
-        try:
-            return serialize_instance(obj, indent, new_indent)
-        except TypeError:
-            raise TypeError'''
-
-
-'''def serialize_instance(obj, indent, new_indent):
-    data = {
-        'instance_type': {
-            'class': obj.__class__,
-            'dict': obj.__dict__,
-        }
-    }
-
-    result = serialize_dict(data, indent, new_indent)
-
-    return result'''
 
 
 def serialize_instance(obj):
@@ -118,34 +91,9 @@ def get_name_class(obj):
 
 def get_bases_class(obj):
     data = serialize_list(obj.__bases__)
-    '''result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]'''
+
     result = data
     return result
-
-
-'''def serialize_dict_class(obj, indent, new_indent=0):
-    if len(obj) == 0:
-        return '{}'
-
-    else:
-        result = '{\n'
-        new_indent += indent
-
-        for key in list(obj)[:len(obj) - 1]:
-
-            if key in EXTRA_ATTRIBUTE_CLASS_CODE:
-                continue
-
-            result += ' ' * new_indent + QUOTATION_MARK + str(key) + QUOTATION_MARK + ': ' \
-                      + serialize(obj[key], indent, new_indent) + ',\n'
-
-        if list(obj)[len(obj) - 1] not in EXTRA_ATTRIBUTE_CLASS_CODE:
-            result += ' ' * new_indent + QUOTATION_MARK + str(list(obj)[len(obj) - 1]) \
-                      + QUOTATION_MARK + ': ' + serialize(obj[list(obj)[len(obj) - 1]], indent, new_indent) + '\n'
-
-        result += ' ' * (new_indent - indent) + '}'
-
-    return result'''
 
 
 def serialize_dict_class(obj):
@@ -163,7 +111,6 @@ def get_code_class(obj):
     if obj.__name__ != 'object':
         data = serialize_dict_class(dict(obj.__dict__))
         result = data
-        '''result = Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]'''
 
     else:
         result = {}
@@ -213,7 +160,7 @@ def serialize_code(obj: types.CodeType):
 
 def serialize_function(obj: types.FunctionType):
     glob = get_globals(obj)
-    x=serialize(obj.__code__.co_consts)
+    x = serialize(obj.__code__.co_consts)
     function_dict = {
         "function_type": {
             "__globals__": glob,
@@ -241,28 +188,8 @@ def serialize_function(obj: types.FunctionType):
         }
     }
     result = serialize(function_dict)
-    '''result = serialize_dict(function_dict, indent, new_indent)'''
 
     return result
-
-
-'''def serialize_dict(obj, indent, new_indent=0):
-    if len(obj) == 0:
-        return '{}'
-
-    else:
-        result = '{\n'
-        new_indent += indent
-
-        for key in list(obj)[:len(obj) - 1]:
-            result += ' ' * new_indent + QUOTATION_MARK + str(key) + QUOTATION_MARK + ': ' \
-                      + serialize(obj[key], indent, new_indent) + ',\n'
-
-        result += ' ' * new_indent + QUOTATION_MARK + str(list(obj)[len(obj) - 1]) + QUOTATION_MARK + ': ' + \
-                  serialize(obj[list(obj)[len(obj) - 1]], indent, new_indent) + '\n'
-        result += ' ' * (new_indent - indent) + '}'
-
-    return result'''
 
 
 def serialize_list(obj):
@@ -278,20 +205,15 @@ def serialize_list(obj):
     return result
 
 
-def serialize_tuple(obj):
-    result = tuple(serialize_list(obj))
-
-    return result
-
 
 def serialize_dict(obj):
     result = {}
 
     for key in obj:
-        if obj[key] is None:
+        '''if obj[key] is None:
             result[key]("None")
 
-        else:
-            result[key] = serialize(obj[key])
+        else:'''
+        result[key] = serialize(obj[key])
 
     return result
