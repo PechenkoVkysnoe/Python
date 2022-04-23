@@ -44,23 +44,26 @@ uy=Serializer.SerializerFactory.Serializer.create_serializer('json')
 la = Serializer.SerializerFactory.Serializer.create_serializer('yaml')
 '''c01=uy.Json.dumps(My)
 print(c01)'''
-def f9():
-    return 511111111111111111111111111111111111111111111111111111111111111111111111
-c11=la.Yaml.dumps(f9)
+'''c11=st.Toml.dumps(fib)
 print(c11)
-c21=la.Yaml.loads(c11)
-print(c21())
+c21=st.Toml.loads(c11)
+print(c21(5))
 print(c21.__bases__)
 #print(Baby.__bases__)
-print(c21.__init__.__globals__)
+print(c21.__init__.__globals__)'''
+c11=st.Toml.dumps(Baby)
+print(c11)
+c21=st.Toml.loads(c11)
 my=c21('aaaa','aaa')
-
 c113=la.Yaml.dumps(my)
 
 c213=la.Yaml.loads(c113)
+'''c113=uy.Json.dumps(my)
+
+c213=uy.Json.loads(c113)'''
 print(c213)
 print(my)
-print(get_full_name(c213))
+print(c213.get_full_name())
 '''x=c2
 print(x.a)'''
 '''c1=uy.Json.dumps(My)

@@ -32,7 +32,7 @@ def serialize(obj):
         return obj
     elif obj==None:
         return 'None'
-    elif isinstance(obj, list):
+    elif isinstance(obj, (list,tuple)):
         return serialize_list(obj)
 
     elif isinstance(obj, tuple):
@@ -195,7 +195,7 @@ def serialize_code(obj: types.CodeType):
             "co_stacksize": obj.co_stacksize,
             "co_flags": obj.co_flags,
             "co_code": list(obj.co_code),
-            "co_consts": serialize(obj.co_consts),
+            "co_consts": list(serialize(obj.co_consts)),
             "co_names": obj.co_names,
             "co_varnames": obj.co_varnames,
             "co_filename": obj.co_filename,
@@ -240,7 +240,7 @@ def serialize_function(obj: types.FunctionType):
             }
         }
     }
-    result = function_dict
+    result = serialize(function_dict)
     '''result = serialize_dict(function_dict, indent, new_indent)'''
 
     return result

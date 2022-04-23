@@ -38,7 +38,7 @@ def deserialize_class(cls):
     else:
         x = deserialize(cls['class_type']["__bases__"])
         y = deserialize(cls['class_type']["__code__"])
-        result = type(cls['class_type']["__name__"], deserialize(cls['class_type']["__bases__"]),
+        result = type(cls['class_type']["__name__"], tuple(deserialize(cls['class_type']["__bases__"])),
                       deserialize(cls['class_type']["__code__"]))
 
         return result
@@ -134,16 +134,15 @@ def deserialize_tuple(obj):
 
 
 def deserialize_instance(obj):
+    obj['instance_type']['__class__']=deserialize(obj['instance_type']['__class__'])
     def __init__(self):
         pass
 
-    cls = deserialize(obj['instance_type']['__class__'])
+    cls = obj['instance_type']['__class__']
     temp = cls.__init__
     cls.__init__ = __init__
-    result = deserialize(obj['instance_type']['__class__'])
-    o = obj['instance_type']['__dict__']
-    print(result.__dict__)
-    # result.__dict__ = obj['instance_type']['__dict__']
+    result = obj['instance_type']['__class__']()
+    result.__dict__ = obj['instance_type']['__dict__']
     result.__init__ = temp
-    # result.__class__.__init__ = temp
+    result.__class__.__init__ = temp
     return result
