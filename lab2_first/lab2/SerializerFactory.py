@@ -1,7 +1,7 @@
-from Serializer.SerializerJson.constants import JSON, YAML, TOML
-from Parsers.JsonParser import Json
-from Parsers.TomlParser import Toml
-from Parsers.YamlParser import Yaml
+from lab2.Serializer.SerializerJson.constants import JSON, YAML, TOML
+from lab2.Parsers.JsonParser import Json
+from lab2.Parsers.TomlParser import Toml
+from lab2.Parsers.YamlParser import Yaml
 
 
 class Serializer:

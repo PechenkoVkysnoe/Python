@@ -2,8 +2,8 @@ import math
 import random
 import types
 
-import Serializer.SerializerFactory
-import Serializer.SerializerJson
+import lab2.Serializer.SerializerFactory
+import lab2.Serializer.SerializerJson
 
 
 def hello():
@@ -65,9 +65,9 @@ class Baby(Dad):
         return [self.first_name, self.second_name]
 
 
-st = Serializer.SerializerFactory.Serializer.create_serializer('toml')
-uy = Serializer.SerializerFactory.Serializer.create_serializer('json')
-la = Serializer.SerializerFactory.Serializer.create_serializer('yaml')
+st = lab2.Serializer.SerializerFactory.Serializer.create_serializer('toml')
+uy = lab2.Serializer.SerializerFactory.Serializer.create_serializer('json')
+la = lab2.Serializer.SerializerFactory.Serializer.create_serializer('yaml')
 '''c01=uy.Json.dumps(My)
 print(c01)'''
 '''c11=st.Toml.dumps(fib)

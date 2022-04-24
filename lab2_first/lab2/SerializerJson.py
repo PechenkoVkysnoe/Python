@@ -1,7 +1,7 @@
 import types
 import inspect
-import Deserializer.DeserializerJson.DeserializerJson
-from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, EXTRA_ATTRIBUTE_CLASS_CODE
+import lab2.Deserializer.DeserializerJson.DeserializerJson
+from lab2.Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, EXTRA_ATTRIBUTE_CLASS_CODE
 
 
 def serialize(obj, indent, new_indent=0):
@@ -84,7 +84,7 @@ def get_name_class(obj, indent, new_indent):
 
 def get_bases_class(obj, indent, new_indent):
     data = serialize_list(obj.__bases__, indent, new_indent)
-    result = Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]
+    result = lab2.Deserializer.DeserializerJson.DeserializerJson.deserialize_list(data, 0)[0]
 
     return result
 
@@ -117,7 +117,7 @@ def serialize_dict_class(obj, indent, new_indent=0):
 def get_code_class(obj, indent, new_indent):
     if obj.__name__ != 'object':
         data = serialize_dict_class(dict(obj.__dict__), indent, new_indent)
-        result = Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]
+        result = lab2.Deserializer.DeserializerJson.DeserializerJson.deserialize_dict(data, 0)[0]
 
     else:
         result = {}

@@ -1,7 +1,7 @@
 import types
 import inspect
-import Deserializer.DeserializerJson.DeserializerJson
-from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, EXTRA_ATTRIBUTE_CLASS_CODE
+import lab2.Deserializer.DeserializerJson.DeserializerJson
+from lab2.Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, EXTRA_ATTRIBUTE_CLASS_CODE
 
 
 def serialize(obj):

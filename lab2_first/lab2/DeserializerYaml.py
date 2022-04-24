@@ -8,10 +8,10 @@ def deserialize(obj):
     if isinstance(obj, (int, float, bool)):
         return obj
     if isinstance(obj, str):
-        '''if str == 'None':
+        if str == 'None':
             return None
-        else:'''
-        return obj
+        else:
+            return obj
     elif isinstance(obj, list):
         return deserialize_list(obj)
     elif isinstance(obj, tuple):
@@ -53,6 +53,20 @@ def deserialize_dict(obj):
         else:
             result[key] = deserialize(obj[key])
 
+    return result
+
+
+def deserialize_instance(obj):
+    def __init__(self):
+        pass
+
+    cls = obj['instance_type']['class']
+    temp = cls.__init__
+    cls.__init__ = __init__
+    result = obj['instance_type']['class']()
+    result.__dict__ = obj['instance_type']['dict']
+    result.__init__ = temp
+    result.__class__.__init__ = temp
     return result
 
 

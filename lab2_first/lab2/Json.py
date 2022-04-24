@@ -1,5 +1,5 @@
-import Deserializer.DeserializerJson.DeserializerJson
-from Serializer.SerializerJson import SerializerJson
+import lab2.Deserializer.DeserializerJson.DeserializerJson
+from lab2.Serializer.SerializerJson import SerializerJson
 
 
 class Json:
@@ -27,6 +27,6 @@ class Json:
 
     @staticmethod
     def loads(s):
-        result = Deserializer.DeserializerJson.DeserializerJson.deserialize(s)[0]
+        result = lab2.Deserializer.DeserializerJson.DeserializerJson.deserialize(s)[0]
 
         return result
