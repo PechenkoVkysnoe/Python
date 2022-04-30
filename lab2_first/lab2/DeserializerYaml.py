@@ -1,7 +1,4 @@
 import types
-import inspect
-from Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, MINUS, EXTRA_CHARACTERS_IN_LIST, \
-    EXTRA_CHARACTERS_IN_DICT
 
 
 def deserialize(obj):

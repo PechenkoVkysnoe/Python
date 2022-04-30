@@ -1,5 +1,5 @@
 import types
-from lab2.Serializer.SerializerJson.constants import NULL, TRUE, FALSE, QUOTATION_MARK, MINUS, EXTRA_CHARACTERS_IN_LIST, \
+from lab2.constants import NULL, TRUE, FALSE, QUOTATION_MARK, MINUS, EXTRA_CHARACTERS_IN_LIST, \
     EXTRA_CHARACTERS_IN_DICT
 
 

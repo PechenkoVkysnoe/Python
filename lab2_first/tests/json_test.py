@@ -1,6 +1,6 @@
 from unittest import TestCase
 from tests.test_things import my_number, my_list, my_dict, fib, mathematics, hello, Baby, Gender
-from lab2.Serializer import SerializerFactory
+from lab2 import SerializerFactory
 
 
 class TestFunction(TestCase):
@@ -36,8 +36,6 @@ class TestFunction(TestCase):
         self.my_parser.Json.dump(hello, self.file, indent=2)
         result = self.my_parser.Json.load(self.file)
         self.assertEqual(result(), hello())
-        print(11111111111111111111111111111111111111111111111111111111111111111111111111)
-        print(hello.__closure__)
 
     def test_parser_class(self):
         self.my_parser.Json.dump(Baby, self.file, indent=2)

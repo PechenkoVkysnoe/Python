@@ -1,6 +1,6 @@
 import yaml
-from lab2.Serializer.SerializerYaml.SerializerYaml import serialize
-from lab2.Deserializer.DeserializerYaml.DeserializerYaml import deserialize
+from lab2.SerializerYaml import serialize
+from lab2.DeserializerYaml import deserialize
 
 
 class Yaml:

@@ -1,14 +1,12 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name="my_first_lib",
+    name="myfirstlib",
     version="1.0.0",
     description="Serialize and deserialize objects to Yaml, Toml, Json",
+    url="https://github.com/PechenkoVkysnoe/Python/tree/lab2/lab2_first",
     author="Misha Grigorchuk",
     author_email='mishagrigorchu@gmail.com',
-    url="https://github.com/PechenkoVkysnoe/Python/tree/lab2/lab2_first",
-    install_requires=["pytomlpp"],
-    packages=["lab2/",
-              "."],
-    entry_points={"console_scripts": "cu=console_util:main"}
+    install_requires=["pytomlpp", 'pyyaml'],
+    packages=find_packages(),
 )

@@ -1,9 +1,10 @@
 import math
 import random
-t=5
+
+t = 5
 my_number = 42
 my_list = [True, [False, 228], 'pamagiti', []]
-my_dict = {'1': {'2': 'aaaaaaaaaaa'}, '-5': 228, 'fd': [my_list],'Халява':'прийди'}
+my_dict = {'1': {'2': 'aaaaaaaaaaa'}, '-5': 228, 'fd': [my_list], 'Халява': 'прийди'}
 my_list2 = {}
 
 
@@ -54,4 +55,3 @@ class Baby(Dad):
 
     def get_full_name(self):
         return [self.first_name, self.second_name]
-

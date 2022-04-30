@@ -1,1 +1,0 @@
-from lab2 import

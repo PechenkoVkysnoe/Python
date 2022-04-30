@@ -78,7 +78,7 @@ __name__ = 'mathematics'
     ]
     co_consts = [ 'None', '-5' ]
     co_filename = '/home/pechenkovkysnoe/PycharmProjects/python/lab2_first/tests/test_things.py'
-    co_firstlineno = 18
+    co_firstlineno = 19
     co_flags = 67
     co_freevars = []
     co_kwonlyargcount = 0
