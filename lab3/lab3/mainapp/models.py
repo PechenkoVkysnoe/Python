@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.urls import reverse
 
 User = get_user_model()
@@ -84,6 +84,10 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+    def get_model_name(self):
+        return self.__class__.__name__.lower()
+
+
 
 class CartProduct(models.Model):
     user = models.ForeignKey('Customer', verbose_name='Customer Name', on_delete=models.CASCADE)
@@ -95,25 +99,41 @@ class CartProduct(models.Model):
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='General Price')
 
     def __str__(self):
-        return f'Cart product {self.product.title}'
+        #return f'Cart product {self.content_object.title}'
+        return "Продукт: {} (для корзины)".format(self.content_object.title)
+
+    def save(self, *args, **kwargs):
+        self.final_price = self.quality * self.content_object.price
+        super().save(*args, **kwargs)
+
+
 
 
 class Cart(models.Model):
-    owner = models.ForeignKey('Customer', verbose_name="Cart's owner", on_delete=models.CASCADE)
+    owner = models.ForeignKey('Customer', null=True, verbose_name="Cart's owner", on_delete=models.CASCADE)
     products = models.ManyToManyField(CartProduct, blank=True, related_name='relate_cart')
     total_products = models.PositiveIntegerField(default=0)
-    final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='General Price')
+    final_price = models.DecimalField(max_digits=9, default=0, decimal_places=2, verbose_name='General Price')
     in_order = models.BooleanField(default=False)
     for_anonymous_user = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)
 
+    def save(self, *args, **kwargs):
+        card_data = self.products.aggregate(models.Sum('final_price'), models.Count('id'))
+        if card_data['final_price__sum']:
+            self.final_price = card_data['final_price__sum']
+        else:
+            self.final_price = 0
+        self.total_products = card_data['id__count']
+        super().save(*args, **kwargs)
+
 
 class Customer(models.Model):
     user = models.ForeignKey(User, verbose_name='Customer', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=13, verbose_name='Phone number')
-    address = models.CharField(max_length=255, verbose_name=' Address')
+    phone = models.CharField(max_length=13, verbose_name='Phone number', null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name=' Address', null=True, blank=True)
 
     def __str__(self):
         return f'Customer: {self.user.first_name} {self.user.last_name}'
@@ -134,6 +154,7 @@ class Notebook(Product):
         return get_product_url(self, 'product_detail')
 
 
+
 class Smartphone(Product):
     diagonal = models.CharField(max_length=255, verbose_name='Diagonal')
     display_type = models.CharField(max_length=255, verbose_name="Display's type")
@@ -150,3 +171,5 @@ class Smartphone(Product):
 
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
+
+

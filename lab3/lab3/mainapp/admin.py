@@ -24,8 +24,8 @@ from PIL import Image
 
 
 class NotebookAdminForm(ModelForm):
-    MIN_RESOLUTION = (400, 400)
-    MAX_RESOLUTION = (800, 800)
+    MIN_RESOLUTION = (200, 200)
+    MAX_RESOLUTION = (10000, 10000)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
