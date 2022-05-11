@@ -172,4 +172,17 @@ class Smartphone(Product):
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
 
+class Order(models.Model):
+    STATUS_NEW='new'
+    STATUS_IN_PROGRESS='in_progress'
+    STATUS_READY='is_ready'
+    STATUS_COMPLETED='completed'
+    STATUS_CHICES
+    customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255, verbose_name='Имя')
+    second_name = models.CharField(max_length=255, verbose_name='Фамилия')
+    third_name = models.CharField(max_length=255, verbose_name='Отчество')
+    phone = models.CharField(max_length=255, verbose_name='Адрес', null=)
+
+
 
