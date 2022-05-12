@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.urls import reverse
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -88,7 +89,6 @@ class Product(models.Model):
         return self.__class__.__name__.lower()
 
 
-
 class CartProduct(models.Model):
     user = models.ForeignKey('Customer', verbose_name='Customer Name', on_delete=models.CASCADE)
     cart = models.ForeignKey('Cart', verbose_name='Cart name', on_delete=models.CASCADE, related_name='related_product')
@@ -99,14 +99,12 @@ class CartProduct(models.Model):
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='General Price')
 
     def __str__(self):
-        #return f'Cart product {self.content_object.title}'
+        # return f'Cart product {self.content_object.title}'
         return "Продукт: {} (для корзины)".format(self.content_object.title)
 
     def save(self, *args, **kwargs):
         self.final_price = self.quality * self.content_object.price
         super().save(*args, **kwargs)
-
-
 
 
 class Cart(models.Model):
@@ -120,21 +118,15 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.id)
 
-    def save(self, *args, **kwargs):
-        card_data = self.products.aggregate(models.Sum('final_price'), models.Count('id'))
-        if card_data['final_price__sum']:
-            self.final_price = card_data['final_price__sum']
-        else:
-            self.final_price = 0
-        self.total_products = card_data['id__count']
-        super().save(*args, **kwargs)
+
+
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(User, verbose_name='Customer', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Customer', related_name='related_orders', on_delete=models.CASCADE)
     phone = models.CharField(max_length=13, verbose_name='Phone number', null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name=' Address', null=True, blank=True)
-
+    orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_customer')
     def __str__(self):
         return f'Customer: {self.user.first_name} {self.user.last_name}'
 
@@ -154,7 +146,6 @@ class Notebook(Product):
         return get_product_url(self, 'product_detail')
 
 
-
 class Smartphone(Product):
     diagonal = models.CharField(max_length=255, verbose_name='Diagonal')
     display_type = models.CharField(max_length=255, verbose_name="Display's type")
@@ -172,17 +163,44 @@ class Smartphone(Product):
     def get_absolute_url(self):
         return get_product_url(self, 'product_detail')
 
+
 class Order(models.Model):
-    STATUS_NEW='new'
-    STATUS_IN_PROGRESS='in_progress'
-    STATUS_READY='is_ready'
-    STATUS_COMPLETED='completed'
-    STATUS_CHICES
+    STATUS_NEW = 'new'
+    STATUS_IN_PROGRESS = 'in_progress'
+    STATUS_READY = 'is_ready'
+    STATUS_COMPLETED = 'completed'
+    BUYING_TYPE_SELF = 'self'
+    BUYING_TYPE_DELIVERY = 'delivery'
+    STATUS_CHOICES = (
+        (STATUS_NEW, 'Новый заказ'),
+        (STATUS_IN_PROGRESS, 'Заказ в обработке'),
+        (STATUS_READY, 'Заказ готов'),
+        (STATUS_COMPLETED, 'Заказ выполнен'),
+    )
+
+    BUYING_TYPE_CHOICES = (
+        (BUYING_TYPE_SELF, 'Самовывоз'),
+        (BUYING_TYPE_DELIVERY, 'Доставка')
+    )
+
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255, verbose_name='Имя')
     second_name = models.CharField(max_length=255, verbose_name='Фамилия')
     third_name = models.CharField(max_length=255, verbose_name='Отчество')
-    phone = models.CharField(max_length=255, verbose_name='Адрес', null=)
+    phone = models.CharField(max_length=20, verbose_name='Телефон', default='')
+    cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
+    status = models.CharField(max_length=255, verbose_name='Статус заказа', choices=STATUS_CHOICES, default=STATUS_NEW)
 
+    buying_type = models.CharField(
+        max_length=255,
+        verbose_name='Тип заказа',
+        choices=BUYING_TYPE_CHOICES,
+        default=BUYING_TYPE_SELF
+    )
+    comment = models.TextField(verbose_name='Комментарий к заказу', null=True, blank=True)
+    created_ad = models.DateTimeField(auto_now=True, verbose_name='Дата создания заказа')
+    order_data = models.DateField(verbose_name='Дата получения заказа', default=timezone.now)
 
-
+    def __str__(self):
+        return str(self.id)
