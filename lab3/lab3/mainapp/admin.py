@@ -7,7 +7,7 @@ from PIL import Image
 
 # AXTUNG!!!!!!
 # Register your models here.
-
+'''Тут регистрируются модели, для того, чтобы они находились в админке'''
 '''class SmartphoneAdminForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)

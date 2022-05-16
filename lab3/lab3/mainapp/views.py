@@ -9,7 +9,9 @@ from .forms import OrderForm
 from .utils import recalc_cart
 from django.contrib import messages
 # Create your views here.
-
+'''По факту, вся логика
+request-запрос, который даёт пользователь на сервер джанго'''
+'''Если выполнен url запрос по данному адресу, то выполнится метод get'''
 class BaseView(CartMixin, View):
     def get(self, request, *args, **kwargs):
         categories = Category.object.get_categories_for_left_sidebar()
@@ -69,6 +71,7 @@ class AddToCartView(CartMixin, View):
         if created:
             self.cart.products.add(cart_product)
         recalc_cart(self.cart)
+        '''HttpResponseRedirect означает, что ответ будет перенаправлять нас куда-то'''
         return HttpResponseRedirect('/cart/')
 
 
