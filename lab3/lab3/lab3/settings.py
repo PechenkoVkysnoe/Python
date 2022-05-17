@@ -125,7 +125,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+#те директории, где джанго будет искать файлы, чтобы переместить их в static(то есть какие-то новые файлы)
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static_dev'),
 )

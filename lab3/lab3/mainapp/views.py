@@ -3,20 +3,23 @@ from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import DetailView, View
 from django.http import HttpResponseRedirect
-from .models import Notebook, Smartphone, Category, LatestProducts, Cart, Customer, CartProduct
+from .models import Notebook, Smartphone, Category, LatestProducts, Cart, Customer, CartProduct, Short, Dress, LongShort
 from .mixins import CategoryDetailMixin, CartMixin
 from .forms import OrderForm
 from .utils import recalc_cart
 from django.contrib import messages
+
 # Create your views here.
 '''По факту, вся логика
 request-запрос, который даёт пользователь на сервер джанго'''
 '''Если выполнен url запрос по данному адресу, то выполнится метод get'''
+
+
 class BaseView(CartMixin, View):
     def get(self, request, *args, **kwargs):
         categories = Category.object.get_categories_for_left_sidebar()
-        products = LatestProducts.objects.get_products_for_main_page('notebook', 'smartphone',
-                                                                     with_respect_to='smartphone')
+        products = LatestProducts.objects.get_products_for_main_page('short', 'dress', 'longshort',
+                                                                     with_respect_to='short')
         context = {
             'categories': categories,
             'products': products,
@@ -24,11 +27,16 @@ class BaseView(CartMixin, View):
         }
         return render(request, 'base.html', context)
 
-
+#при помощи одного этого представления, мы можем выводить информацию сразу же из нескольких моделей
+#то есть нам не надо писать отдельные url pattern для того, чтобы выводить объекты разных моделей
+#мы на уровне dispatch сразу определяем, что это за модель и выводим информацию о данном объекте
 class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     CT_MODEL_MODEL_CLASS = {
         'notebook': Notebook,
-        'smartphone': Smartphone
+        'smartphone': Smartphone,
+        'short': Short,
+        'dress': Dress,
+        'long_short': LongShort
     }
 
     def dispatch(self, request, *args, **kwargs):
@@ -128,8 +136,9 @@ class CheckoutView(CartMixin, View):
         }
         return render(request, 'checkout.html', context)
 
+
 class MakeOrderView(CartMixin, View):
-    #декоратор нужен для того, чтобы при ошибке все откатилось(можно попробовать удалить нахуй)
+    # декоратор нужен для того, чтобы при ошибке все откатилось(можно попробовать удалить нахуй)
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = OrderForm(request.POST or None)

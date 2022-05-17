@@ -23,12 +23,21 @@
             <button class="btn btn-danger">Дадаць у кошык</button>
         </a>
     </div>
-    <p class="mt-4">Характеристики:</p>
+    <p class="mt-4">Характарыстыкі:</p>
     {% if product.category.slug == 'notebooks' %}
-    {% include 'notebook_specification.html' %}
+        {% include 'notebook_specification.html' %}
     {% endif %}
     {% if product.category.slug == 'smartphones'%}
-    {% include 'smartphone_specification.html' %}
+        {% include 'smartphone_specification.html' %}
+    {% endif %}
+    {% if product.category.slug == 'shorts'%}
+        {% include 'short_specification.html' %}
+    {% endif %}
+    {% if product.category.slug == 'dresses'%}
+        {% include 'dress_specification.html' %}
+    {% endif %}
+    {% if product.category.slug == 'longshorts'%}
+        {% include 'long_short_specification.html' %}
     {% endif %}
 </div>
 
