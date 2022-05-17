@@ -99,8 +99,8 @@ class CartProduct(models.Model):
     final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='General Price')
 
     def __str__(self):
-        # return f'Cart product {self.content_object.title}'
-        return "Продукт: {} (для корзины)".format(self.content_object.title)
+        return f'Cart product {self.content_object.title}'
+        # return "Продукт: {} (для корзины)".format(self.content_object.title)
 
     def save(self, *args, **kwargs):
         self.final_price = self.quality * self.content_object.price
@@ -119,14 +119,13 @@ class Cart(models.Model):
         return str(self.id)
 
 
-
-
-
 class Customer(models.Model):
     user = models.ForeignKey(User, verbose_name='Customer', related_name='related_orders', on_delete=models.CASCADE)
     phone = models.CharField(max_length=13, verbose_name='Phone number', null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name=' Address', null=True, blank=True)
-    orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_customer', blank=True, null=True)
+    orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_customer',
+                                    blank=True, null=True)
+
     def __str__(self):
         return f'Customer: {self.user.first_name} {self.user.last_name}'
 

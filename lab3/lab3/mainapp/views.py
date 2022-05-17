@@ -115,6 +115,7 @@ class ChangeQTYView(CartMixin, View):
         recalc_cart(self.cart)
         return HttpResponseRedirect('/cart/')
 
+
 class CheckoutView(CartMixin, View):
     def get(self, request, *args, **kwargs):
         categories = Category.object.get_categories_for_left_sidebar()
