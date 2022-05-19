@@ -61,17 +61,23 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'base' %}">Свядомасць</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive" align="right">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart' %}">Кошык <span class="badge badge-pill badge-danger">{{ cart.products.count }}</span></a>
-                    </li>
-                </ul>
+            {% if user.is_authenticated %}
+                <p class="navbar-brand" style="margin-bottom: 0">Прывітанне, {{user.username }}!</p>
+                <div class="collapse navbar-collapse" id="navbarResponsive" align="right">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="navbar-brand" href="{% url 'cart' %}">Кошык <span class="badge badge-pill badge-danger" style="font-size: 18px; padding-left: 5px; padding-right: 0px" >{{ cart.products.count }}</span></a>
+                        </li>
+                    </ul>
+                </div>
+                <a class="navbar-brand" href="/account/password_change" style="margin-right: 10px">Змена пароля</a>
+                <a class="navbar-brand" href="{% url 'logout' %}">Выйсці</a>
+            {% else %}
+            <div>
+                <a class="navbar-brand" href="{% url 'login' %}">Увайсці</a>
+                <a class="navbar-brand" href="{% url 'singup' %}">Рэгістрацыя</a>
             </div>
+            {% endif %}
         </div>
     </nav>
 
@@ -83,7 +89,11 @@
                 <h1 class="my-4">Свядомасць</h1>
                 <div class="list-group">
                     {% for category in categories %}
-                    <a href="{{ category.url }}" class="list-group-item">{{category.name}} ({{category.count}})</a>
+                    <div>
+                        <h1>asdasd</h1>
+                        <a href="{{ category.url }}" class="list-group-item">{{category.name}} ({{category.count}})</a>
+                    </div>
+
                     {% endfor %}
                 </div>
 
@@ -92,6 +102,16 @@
 
             <div class="col-lg-9">
                 {% block content %}
+                {% if messages %}
+                    {% for massage in messages%}
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>{{ message }}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>

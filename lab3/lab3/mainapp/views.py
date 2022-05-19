@@ -1,14 +1,15 @@
 from django.db import transaction
 from django.shortcuts import render
+#Экземпляры ContentTypeпредставляют и хранят информацию о моделях, установленных в вашем проекте
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import DetailView, View
 from django.http import HttpResponseRedirect
-from .models import Notebook, Smartphone, Category, LatestProducts, Cart, Customer, CartProduct, Short, Dress, LongShort
+from .models import Category, LatestProducts, Cart, Customer, CartProduct, Short, Dress, LongShort
 from .mixins import CategoryDetailMixin, CartMixin
 from .forms import OrderForm
 from .utils import recalc_cart
 from django.contrib import messages
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 '''По факту, вся логика
 request-запрос, который даёт пользователь на сервер джанго'''
@@ -25,6 +26,7 @@ class BaseView(CartMixin, View):
             'products': products,
             'cart': self.cart
         }
+
         return render(request, 'base.html', context)
 
 #при помощи одного этого представления, мы можем выводить информацию сразу же из нескольких моделей
@@ -32,16 +34,15 @@ class BaseView(CartMixin, View):
 #мы на уровне dispatch сразу определяем, что это за модель и выводим информацию о данном объекте
 class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     CT_MODEL_MODEL_CLASS = {
-        'notebook': Notebook,
-        'smartphone': Smartphone,
         'short': Short,
         'dress': Dress,
-        'long_short': LongShort
+        'longshort': LongShort
     }
 
     def dispatch(self, request, *args, **kwargs):
         self.model = self.CT_MODEL_MODEL_CLASS[kwargs['ct_model']]
         self.queryset = self.model._base_manager.all()
+
         return super().dispatch(request, *args, **kwargs)
 
     context_object_name = 'product'
@@ -52,6 +53,7 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['ct_model'] = self.model._meta.model_name
         context['cart'] = self.cart
+
         return context
 
 
@@ -62,28 +64,34 @@ class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
     template_name = 'category_detail.html'
     slug_url_kwarg = 'slug'
 
+    #добавление дополнительной информации
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cart'] = self.cart
+
         return context
 
 
-class AddToCartView(CartMixin, View):
+class AddToCartView(LoginRequiredMixin, CartMixin, View):
     def get(self, request, *args, **kwargs):
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
+        #ContentType.model_class() Возвращает класс модели, представленный этим ContentType экземпляром.
         product = content_type.model_class().objects.get(slug=product_slug)
         cart_product, created = CartProduct.objects.get_or_create(
             user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
         )
+
         if created:
             self.cart.products.add(cart_product)
+
         recalc_cart(self.cart)
+
         '''HttpResponseRedirect означает, что ответ будет перенаправлять нас куда-то'''
         return HttpResponseRedirect('/cart/')
 
 
-class DeleteFromCartView(CartMixin, View):
+class DeleteFromCartView(LoginRequiredMixin, CartMixin, View):
     def get(self, request, *args, **kwargs):
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
@@ -94,21 +102,22 @@ class DeleteFromCartView(CartMixin, View):
         self.cart.products.remove(cart_product)
         cart_product.delete()
         recalc_cart(self.cart)
-        recalc_cart(self.cart)
+
         return HttpResponseRedirect('/cart/')
 
 
-class CartView(CartMixin, View):
+class CartView(LoginRequiredMixin, CartMixin, View):
     def get(self, request, *args, **kwargs):
         categories = Category.object.get_categories_for_left_sidebar()
         context = {
             'cart': self.cart,
             'categories': categories
         }
+
         return render(request, 'cart.html', context)
 
 
-class ChangeQTYView(CartMixin, View):
+class ChangeQTYView(LoginRequiredMixin, CartMixin, View):
 
     def post(self, request, *args, **kwargs):
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
@@ -121,10 +130,11 @@ class ChangeQTYView(CartMixin, View):
         cart_product.quality = quality
         cart_product.save()
         recalc_cart(self.cart)
+
         return HttpResponseRedirect('/cart/')
 
 
-class CheckoutView(CartMixin, View):
+class CheckoutView(LoginRequiredMixin, CartMixin, View):
     def get(self, request, *args, **kwargs):
         categories = Category.object.get_categories_for_left_sidebar()
         form = OrderForm(request.POST or None)
@@ -132,17 +142,18 @@ class CheckoutView(CartMixin, View):
             'cart': self.cart,
             'categories': categories,
             'form': form
-
         }
+
         return render(request, 'checkout.html', context)
 
 
-class MakeOrderView(CartMixin, View):
+class MakeOrderView(LoginRequiredMixin, CartMixin, View):
     # декоратор нужен для того, чтобы при ошибке все откатилось(можно попробовать удалить нахуй)
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = OrderForm(request.POST or None)
         customer = Customer.objects.get(user=request.user)
+
         if form.is_valid():
             new_order = form.save(commit=False)
             new_order.customer = customer
@@ -160,6 +171,8 @@ class MakeOrderView(CartMixin, View):
             new_order.cart = self.cart
             new_order.save()
             customer.orders.add(new_order)
-            messages.add_message(request, messages.INFO, 'Спасибо, за заказ! Менеджер с Вами свяжется')
+            messages.add_message(request, messages.INFO, 'Дзякуй, за замову! Мэнэджар з Вамі звяжацца')
+
             return HttpResponseRedirect('/')
+
         return HttpResponseRedirect('/checkout/')

@@ -2,6 +2,7 @@
 
 {% block content %}
 <h3 class="text-center mt-5 mb-5">Ваш кошык {% if not cart.products.count%}пусты{%endif%}</h3>
+{% if cart.products.count%}
 <table class="table">
   <thead>
     <tr>
@@ -23,7 +24,7 @@
           {% csrf_token %}
           <input type="number" class = "form-control" name="quality" style="width: 70px;" min="1" value="{{item.quality}}">
           <br>
-          <input type="submit" class="btn btn-primary" value="Змяніць колькасць">
+          <input type="submit" class="btn btn-danger" value="Змяніць колькасць">
         </form></td>
       <td>{{item.final_price}} зайчыкаў</td>
       <td>
@@ -33,13 +34,16 @@
       </td>
     </tr>
     {% endfor %}
+
     <tr>
       <td colspan="2"></td>
       <td>Разам:</td>
       <td> {{cart.total_products}}</td>
       <td> <strong>{{cart.final_price}} зайчыкаў</strong></td>
-      <td><a href="{% url 'checkout' %}"><button class="btn btn-primary">Перайсці да афармлення замовы</button></a> </td>
+      <td><a href="{% url 'checkout' %}"><button class="btn btn-danger">Перайсці да афармлення замовы</button></a> </td>
     </tr>
+
   </tbody>
 </table>
+{% endif %}
 {% endblock content %}

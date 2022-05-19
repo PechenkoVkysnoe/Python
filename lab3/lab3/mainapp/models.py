@@ -8,19 +8,21 @@ from django.utils import timezone
 # По факту мы сейчас говорим, что мы хотим использовать того юзера, который у нас прописан в settings.AUTH_USER_MODEL(Настройка скрытая, но она есть)
 User = get_user_model()
 
-
+#
 def get_models_for_count(*model_names):
     return [models.Count(model_name) for model_name in model_names]
 
-
+#
 # функция, которая позволяет не писать для каждого продукта функцию для нахождения конечного endpointa(url)
 def get_product_url(obj, view_name):
     ct_model = obj.__class__._meta.model_name
+
     return reverse(view_name, kwargs={'ct_model': ct_model, 'slug': obj.slug})
 
 
-# вывод продуктов на главной странице
+## вывод продуктов на главной странице
 class LatestProductsManager:
+
     @staticmethod
     def get_products_for_main_page(*args, **kwargs):
         with_respect_to = kwargs.get('with_respect_to')
@@ -28,21 +30,24 @@ class LatestProductsManager:
         ct_models = ContentType.objects.filter(model__in=args)
 
         for ct_model in ct_models:
-            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:5]
+            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:4]
             products.extend(model_products)
+
         if with_respect_to:
             ct_model = ContentType.objects.filter(model=with_respect_to)
+
             if ct_model.exists():
                 if with_respect_to in args:
                     return sorted(products, key=lambda x: x.__class__._meta.model_name.startswith(with_respect_to),
                                   reverse=True)
+
         return products
 
-
+#
 class LatestProducts:
     objects = LatestProductsManager()
 
-
+#
 class CategoryManager(models.Manager):
     CATEGORY_NAME_COUNT_NAME = {
         'Сукенка': 'dress__count',
@@ -60,12 +65,15 @@ class CategoryManager(models.Manager):
             dict(name=c.name, url=c.get_absolute_url(), count=getattr(c, self.CATEGORY_NAME_COUNT_NAME[c.name]))
             for c in qs
         ]
+
         return data
 
 
 class Category(models.Model):
     name = models.CharField(max_length=255, verbose_name='Category Name')
+    # slug-уникальный фрагмент url адреса аассоциированный с конкретной записью
     slug = models.SlugField(unique=True)
+    #??
     object = CategoryManager()
 
     def __str__(self):
@@ -73,6 +81,7 @@ class Category(models.Model):
 
     # метод, который формирует нужный нам маршрут(в html), маршрут к конкретной записи
     def get_absolute_url(self):
+        #
         return reverse('category_detail', kwargs={'slug': self.slug})
 
 
@@ -90,7 +99,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
-
+    #
     def get_model_name(self):
         return self.__class__.__name__.lower()
 
@@ -102,6 +111,8 @@ class CartProduct(models.Model):
     # Даёт понимаение того, какой именно продукт сейчас у меня
     # Content_type-микро фремформ, который выдит все мои модели, которые есть у меня в install_apps и соответсвенно
     # когда я зайду в админку и увижу все модели, которые есть у меня в проекте
+    #оторое позволяет отслеживать все модели вашего Django проекта. Это приложение предоставляет высокоуровневый,
+    # обобщенный интерфейс для работы с вашими моделями.
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # индификатор instanse этой модели
     object_id = models.PositiveIntegerField()
@@ -116,8 +127,7 @@ class CartProduct(models.Model):
 
     def __str__(self):
         return f'Cart product {self.content_object.title}'
-        # return "Продукт: {} (для корзины)".format(self.content_object.title)
-
+    #Отрабатывает при создании нового cartProduct
     def save(self, *args, **kwargs):
         self.final_price = self.quality * self.content_object.price
         super().save(*args, **kwargs)
@@ -138,47 +148,13 @@ class Cart(models.Model):
 
 
 class Customer(models.Model):
+    #
     user = models.ForeignKey(User, verbose_name='Customer', related_name='related_orders', on_delete=models.CASCADE)
-    phone = models.CharField(max_length=13, verbose_name='Phone number', null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name=' Address', null=True, blank=True)
     orders = models.ManyToManyField('Order', verbose_name='Заказы покупателя', related_name='related_customer',
                                     blank=True, null=True)
 
     def __str__(self):
         return f'Customer: {self.user.first_name} {self.user.last_name}'
-
-
-class Notebook(Product):
-    diagonal = models.CharField(max_length=255, verbose_name='Diagonal')
-    display_type = models.CharField(max_length=255, verbose_name="Display's type")
-    processor_frequency = models.CharField(max_length=255, verbose_name="Processor's frequency")
-    ram = models.CharField(max_length=255, verbose_name='Ram')
-    time_without_charge = models.CharField(max_length=255, verbose_name='Battery life')
-    video = models.CharField(max_length=255, verbose_name='Video card')
-
-    def __str__(self):
-        return f"{self.category.name}: {self.title}"
-
-    def get_absolute_url(self):
-        return get_product_url(self, 'product_detail')
-
-
-class Smartphone(Product):
-    diagonal = models.CharField(max_length=255, verbose_name='Diagonal')
-    display_type = models.CharField(max_length=255, verbose_name="Display's type")
-    resolution = models.CharField(max_length=255, verbose_name="Windows's resolution")
-    ram = models.CharField(max_length=255, verbose_name='Ram')
-    time_without_charge = models.CharField(max_length=255, verbose_name='Battery life')
-    sd = models.BooleanField(default=True, verbose_name='Наличие SD карты')
-    sd_volume_max = models.CharField(max_length=255, null=True, blank=True, verbose_name="Maximum value of sd card")
-    frontal_cam_mp = models.CharField(max_length=255, verbose_name='Mp of frontal camera')
-    main_cam_mp = models.CharField(max_length=255, verbose_name='Mp of main camera')
-
-    def __str__(self):
-        return f"{self.category.name}: {self.title}"
-
-    def get_absolute_url(self):
-        return get_product_url(self, 'product_detail')
 
 
 class Short(Product):
@@ -227,35 +203,35 @@ class Order(models.Model):
     BUYING_TYPE_SELF = 'self'
     BUYING_TYPE_DELIVERY = 'delivery'
     STATUS_CHOICES = (
-        (STATUS_NEW, 'Новый заказ'),
-        (STATUS_IN_PROGRESS, 'Заказ в обработке'),
-        (STATUS_READY, 'Заказ готов'),
-        (STATUS_COMPLETED, 'Заказ выполнен'),
+        (STATUS_NEW, 'Новая замова'),
+        (STATUS_IN_PROGRESS, 'Замова ў апрацоўцы'),
+        (STATUS_READY, 'Замова гатовы'),
+        (STATUS_COMPLETED, 'Замова выкананы'),
     )
 
     BUYING_TYPE_CHOICES = (
-        (BUYING_TYPE_SELF, 'Самовывоз'),
-        (BUYING_TYPE_DELIVERY, 'Доставка')
+        (BUYING_TYPE_SELF, 'Самавываз'),
+        (BUYING_TYPE_DELIVERY, 'Дастаўка')
     )
 
-    customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=255, verbose_name='Имя')
-    second_name = models.CharField(max_length=255, verbose_name='Фамилия')
-    third_name = models.CharField(max_length=255, verbose_name='Отчество')
-    phone = models.CharField(max_length=20, verbose_name='Телефон', default='')
-    cart = models.ForeignKey(Cart, verbose_name='Корзина', on_delete=models.CASCADE, null=True, blank=True)
-    address = models.CharField(max_length=255, verbose_name='Адрес', null=True, blank=True)
-    status = models.CharField(max_length=255, verbose_name='Статус заказа', choices=STATUS_CHOICES, default=STATUS_NEW)
+    customer = models.ForeignKey(Customer, verbose_name='Пакупнік', on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255, verbose_name='Імя')
+    second_name = models.CharField(max_length=255, verbose_name='Прозвішча')
+    third_name = models.CharField(max_length=255, verbose_name='Імя па бацьку')
+    phone = models.CharField(max_length=20, verbose_name='Тэлефон', default='')
+    #
+    cart = models.ForeignKey(Cart, verbose_name='Кошык', on_delete=models.CASCADE, null=True, blank=True)
+    address = models.CharField(max_length=255, verbose_name='Адрас', null=True, blank=True)
+    status = models.CharField(max_length=255, verbose_name='Статус замовы', choices=STATUS_CHOICES, default=STATUS_NEW)
 
     buying_type = models.CharField(
         max_length=255,
-        verbose_name='Тип заказа',
+        verbose_name='Тып замовы',
         choices=BUYING_TYPE_CHOICES,
         default=BUYING_TYPE_SELF
     )
-    comment = models.TextField(verbose_name='Комментарий к заказу', null=True, blank=True)
-    created_ad = models.DateTimeField(auto_now=True, verbose_name='Дата создания заказа')
-    order_data = models.DateField(verbose_name='Дата получения заказа', default=timezone.now)
+    comment = models.TextField(verbose_name='Каментарый да заказу', null=True, blank=True)
+    order_data = models.DateField(verbose_name='Дата атрымання замовы', default=timezone.now)
 
     def __str__(self):
         return str(self.id)

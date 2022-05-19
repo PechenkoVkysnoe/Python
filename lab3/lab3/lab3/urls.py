@@ -20,8 +20,11 @@ from django.conf import settings
 '''25 строчка Есть много приложений(у меня одно), но теперь глобальная система знает, что у меня есть mainapp.urls'''
 
 urlpatterns = [
+    path('account/', include('account.urls')),
+    path('account/', include('django.contrib.auth.urls')),
+
+    path('', include('mainapp.urls')),
     path('admin/', admin.site.urls),
-    path('', include('mainapp.urls'))
 ]
 #При нормальной работе, статические файлы не должны храниться тут
 if settings.DEBUG:
