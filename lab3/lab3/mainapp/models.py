@@ -5,20 +5,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.urls import reverse
 from django.utils import timezone
 
-# По факту мы сейчас говорим, что мы хотим использовать того юзера, который у нас прописан в settings.AUTH_USER_MODEL(Настройка скрытая, но она есть)
-User = get_user_model()
-
-#
-def get_models_for_count(*model_names):
-    return [models.Count(model_name) for model_name in model_names]
-
-#
-# функция, которая позволяет не писать для каждого продукта функцию для нахождения конечного endpointa(url)
-def get_product_url(obj, view_name):
-    ct_model = obj.__class__._meta.model_name
-
-    return reverse(view_name, kwargs={'ct_model': ct_model, 'slug': obj.slug})
-
 
 ## вывод продуктов на главной странице
 class LatestProductsManager:
@@ -30,7 +16,7 @@ class LatestProductsManager:
         ct_models = ContentType.objects.filter(model__in=args)
 
         for ct_model in ct_models:
-            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:4]
+            model_products = ct_model.model_class()._base_manager.all().order_by('-id')[:2]
             products.extend(model_products)
 
         if with_respect_to:
@@ -43,9 +29,28 @@ class LatestProductsManager:
 
         return products
 
+
 #
 class LatestProducts:
     objects = LatestProductsManager()
+
+
+# По факту мы сейчас говорим, что мы хотим использовать того юзера, который у нас прописан в settings.AUTH_USER_MODEL(Настройка скрытая, но она есть)
+User = get_user_model()
+
+
+# считаетколичество каждой модели(необходимо для левого бара)
+def get_models_for_count(*model_names):
+    return [models.Count(model_name) for model_name in model_names]
+
+
+#
+# функция, которая позволяет не писать для каждого продукта функцию для нахождения конечного endpointa(url)
+def get_product_url(obj, view_name):
+    ct_model = obj.__class__._meta.model_name
+
+    return reverse(view_name, kwargs={'ct_model': ct_model, 'slug': obj.slug})
+
 
 #
 class CategoryManager(models.Manager):
@@ -55,11 +60,12 @@ class CategoryManager(models.Manager):
         'Рубаха': 'longshort__count'
     }
 
-    def get_queryset(self):
-        return super().get_queryset()
+    '''def get_queryset(self):
+        return super().get_queryset()'''
 
     def get_categories_for_left_sidebar(self):
         models = get_models_for_count('dress', 'short', 'longshort')
+        # Получаем
         qs = list(self.get_queryset().annotate(*models))
         data = [
             dict(name=c.name, url=c.get_absolute_url(), count=getattr(c, self.CATEGORY_NAME_COUNT_NAME[c.name]))
@@ -73,7 +79,7 @@ class Category(models.Model):
     name = models.CharField(max_length=255, verbose_name='Category Name')
     # slug-уникальный фрагмент url адреса аассоциированный с конкретной записью
     slug = models.SlugField(unique=True)
-    #??
+    #
     object = CategoryManager()
 
     def __str__(self):
@@ -99,6 +105,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
     #
     def get_model_name(self):
         return self.__class__.__name__.lower()
@@ -111,7 +118,7 @@ class CartProduct(models.Model):
     # Даёт понимаение того, какой именно продукт сейчас у меня
     # Content_type-микро фремформ, который выдит все мои модели, которые есть у меня в install_apps и соответсвенно
     # когда я зайду в админку и увижу все модели, которые есть у меня в проекте
-    #оторое позволяет отслеживать все модели вашего Django проекта. Это приложение предоставляет высокоуровневый,
+    # оторое позволяет отслеживать все модели вашего Django проекта. Это приложение предоставляет высокоуровневый,
     # обобщенный интерфейс для работы с вашими моделями.
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # индификатор instanse этой модели
@@ -127,7 +134,8 @@ class CartProduct(models.Model):
 
     def __str__(self):
         return f'Cart product {self.content_object.title}'
-    #Отрабатывает при создании нового cartProduct
+
+    # Отрабатывает при создании нового cartProduct
     def save(self, *args, **kwargs):
         self.final_price = self.quality * self.content_object.price
         super().save(*args, **kwargs)

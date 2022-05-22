@@ -3,6 +3,7 @@ from django.views.generic import View
 from .models import Category, Cart, Customer, Short, Dress, LongShort
 
 #По факту нужен для того, чтоыб на каждой странице добавлять девый бар
+#этот миксин работает и для категорий и для товаров
 class CategoryDetailMixin(SingleObjectMixin):
 
     CATEGORY_SLUG_TO_PRODUCT_MODEL = {
@@ -13,9 +14,11 @@ class CategoryDetailMixin(SingleObjectMixin):
 
     def get_context_data(self, **kwargs):
         if isinstance(self.get_object(), Category):
+            #Получаем модель, чтобы отобразить, какие товары в ней присутствуют
             model = self.CATEGORY_SLUG_TO_PRODUCT_MODEL[self.get_object().slug]
             context = super().get_context_data(**kwargs)
             context['categories'] = Category.object.get_categories_for_left_sidebar()
+            #по факту это получается queryset из моделей, которые у нас есть
             context['category_products'] = model.objects.all()
 
         else:

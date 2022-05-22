@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render
-#Экземпляры ContentTypeпредставляют и хранят информацию о моделях, установленных в вашем проекте
+# Экземпляры ContentTypeпредставляют и хранят информацию о моделях, установленных в вашем проекте
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import DetailView, View
 from django.http import HttpResponseRedirect
@@ -10,14 +10,20 @@ from .forms import OrderForm
 from .utils import recalc_cart
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+import logging
+
 # Create your views here.
 '''По факту, вся логика
 request-запрос, который даёт пользователь на сервер джанго'''
 '''Если выполнен url запрос по данному адресу, то выполнится метод get'''
 
+logger = logging.getLogger('main')
+
 
 class BaseView(CartMixin, View):
+
     def get(self, request, *args, **kwargs):
+        logger.info("BaseView")
         categories = Category.object.get_categories_for_left_sidebar()
         products = LatestProducts.objects.get_products_for_main_page('short', 'dress', 'longshort',
                                                                      with_respect_to='short')
@@ -29,9 +35,10 @@ class BaseView(CartMixin, View):
 
         return render(request, 'base.html', context)
 
-#при помощи одного этого представления, мы можем выводить информацию сразу же из нескольких моделей
-#то есть нам не надо писать отдельные url pattern для того, чтобы выводить объекты разных моделей
-#мы на уровне dispatch сразу определяем, что это за модель и выводим информацию о данном объекте
+
+# при помощи одного этого представления, мы можем выводить информацию сразу же из нескольких моделей
+# то есть нам не надо писать отдельные url pattern для того, чтобы выводить объекты разных моделей
+# мы на уровне dispatch сразу определяем, что это за модель и выводим информацию о данном объекте
 class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     CT_MODEL_MODEL_CLASS = {
         'short': Short,
@@ -40,6 +47,7 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     }
 
     def dispatch(self, request, *args, **kwargs):
+        logger.info("ProductDetailView")
         self.model = self.CT_MODEL_MODEL_CLASS[kwargs['ct_model']]
         self.queryset = self.model._base_manager.all()
 
@@ -58,14 +66,18 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
 
 
 class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
+
     model = Category
     queryset = Category.object.all()
     context_object_name = 'category'
     template_name = 'category_detail.html'
     slug_url_kwarg = 'slug'
 
-    #добавление дополнительной информации
+    # добавление дополнительной информации
+    # Контекст который я хочу вывести в моеё вьюшке(аналогия с функцией)
+    # Возвращает словарь, представляющий контекст шаблона. Предоставленные аргументы ключевого слова будут составлять возвращаемый контекст.
     def get_context_data(self, **kwargs):
+        logger.info("CategoryDetailView")
         context = super().get_context_data(**kwargs)
         context['cart'] = self.cart
 
@@ -73,10 +85,14 @@ class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
 
 
 class AddToCartView(LoginRequiredMixin, CartMixin, View):
+
+
     def get(self, request, *args, **kwargs):
+        logger.info("AddToCartView")
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
+        # content_type Тип содержимого, используемый для ответа.
         content_type = ContentType.objects.get(model=ct_model)
-        #ContentType.model_class() Возвращает класс модели, представленный этим ContentType экземпляром.
+        # ContentType.model_class() Возвращает класс модели, представленный этим ContentType экземпляром.
         product = content_type.model_class().objects.get(slug=product_slug)
         cart_product, created = CartProduct.objects.get_or_create(
             user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
@@ -92,7 +108,10 @@ class AddToCartView(LoginRequiredMixin, CartMixin, View):
 
 
 class DeleteFromCartView(LoginRequiredMixin, CartMixin, View):
+
+
     def get(self, request, *args, **kwargs):
+        logger.info("DeleteFromCartView")
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
         product = content_type.model_class().objects.get(slug=product_slug)
@@ -107,7 +126,10 @@ class DeleteFromCartView(LoginRequiredMixin, CartMixin, View):
 
 
 class CartView(LoginRequiredMixin, CartMixin, View):
+
+
     def get(self, request, *args, **kwargs):
+        logger.info("CartView")
         categories = Category.object.get_categories_for_left_sidebar()
         context = {
             'cart': self.cart,
@@ -117,9 +139,12 @@ class CartView(LoginRequiredMixin, CartMixin, View):
         return render(request, 'cart.html', context)
 
 
+#
 class ChangeQTYView(LoginRequiredMixin, CartMixin, View):
 
+
     def post(self, request, *args, **kwargs):
+        logger.info("ChangeQTYView")
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
         product = content_type.model_class().objects.get(slug=product_slug)
@@ -135,7 +160,10 @@ class ChangeQTYView(LoginRequiredMixin, CartMixin, View):
 
 
 class CheckoutView(LoginRequiredMixin, CartMixin, View):
+
+
     def get(self, request, *args, **kwargs):
+        logger.info("CheckoutView")
         categories = Category.object.get_categories_for_left_sidebar()
         form = OrderForm(request.POST or None)
         context = {
@@ -148,9 +176,12 @@ class CheckoutView(LoginRequiredMixin, CartMixin, View):
 
 
 class MakeOrderView(LoginRequiredMixin, CartMixin, View):
-    # декоратор нужен для того, чтобы при ошибке все откатилось(можно попробовать удалить нахуй)
+
+
+    # декоратор нужен для того, чтобы при ошибке все откатилось
     @transaction.atomic
     def post(self, request, *args, **kwargs):
+        logger.info("MakeOrderView")
         form = OrderForm(request.POST or None)
         customer = Customer.objects.get(user=request.user)
 
