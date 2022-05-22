@@ -15,6 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -25,7 +26,9 @@ SECRET_KEY = 'django-insecure-l6u814a$y60fpi(8-ymc#b73uk=)hwxjsrpkw6kq1tksg$3%*(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 # Application definition
 
@@ -52,6 +55,22 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'lab3.urls'
+'''LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+    }
+}'''
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -98,13 +117,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lab3.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+''' Database
+ https://docs.djangoproject.com/en/4.0/ref/settings/#databases'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_db_sec',
-        'USER': 'user_name',
+        'NAME': 'django_db_fives',
+        'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -140,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 

@@ -17,13 +17,13 @@ class CategoryDetailMixin(SingleObjectMixin):
             #Получаем модель, чтобы отобразить, какие товары в ней присутствуют
             model = self.CATEGORY_SLUG_TO_PRODUCT_MODEL[self.get_object().slug]
             context = super().get_context_data(**kwargs)
-            context['categories'] = Category.object.get_categories_for_left_sidebar()
+            context['categories'] = Category.objects.get_categories_for_left_sidebar()
             #по факту это получается queryset из моделей, которые у нас есть
             context['category_products'] = model.objects.all()
 
         else:
             context = super().get_context_data(**kwargs)
-            context['categories'] = Category.object.get_categories_for_left_sidebar()
+            context['categories'] = Category.objects.get_categories_for_left_sidebar()
 
         return context
 

@@ -1,6 +1,16 @@
 from django.template.defaulttags import url
 
-from .views import BaseView, ProductDetailView, CategoryDetailView, CartView, AddToCartView, DeleteFromCartView, ChangeQTYView, CheckoutView, MakeOrderView
+from mainapp.views import (
+    BaseView, 
+    ProductDetailView, 
+    CategoryDetailView, 
+    CartView, 
+    AddToCartView, 
+    DeleteFromCartView, 
+    ChangeQTYView, 
+    CheckoutView, 
+    MakeOrderView
+)
 from django.urls import path
 
 urlpatterns = [

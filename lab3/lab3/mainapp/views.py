@@ -4,10 +4,22 @@ from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import DetailView, View
 from django.http import HttpResponseRedirect
-from .models import Category, LatestProducts, Cart, Customer, CartProduct, Short, Dress, LongShort
-from .mixins import CategoryDetailMixin, CartMixin
+from .models import (
+    Category, 
+    Cart, 
+    Customer, 
+    CartProduct, 
+    Short, 
+    Dress, 
+    LongShort
+)
+from .managers import LatestProducts
+from .mixins import (
+    CategoryDetailMixin, 
+    CartMixin
+)
 from .forms import OrderForm
-from .utils import recalc_cart
+# from .utils import recalc_cart
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 import logging
@@ -23,8 +35,8 @@ logger = logging.getLogger('main')
 class BaseView(CartMixin, View):
 
     def get(self, request, *args, **kwargs):
-        logger.info("BaseView")
-        categories = Category.object.get_categories_for_left_sidebar()
+        logger.info("BaseView") # pragma: no cover
+        categories = Category.objects.get_categories_for_left_sidebar()
         products = LatestProducts.objects.get_products_for_main_page('short', 'dress', 'longshort',
                                                                      with_respect_to='short')
         context = {
@@ -47,7 +59,7 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
     }
 
     def dispatch(self, request, *args, **kwargs):
-        logger.info("ProductDetailView")
+        logger.info("ProductDetailView") # pragma: no cover
         self.model = self.CT_MODEL_MODEL_CLASS[kwargs['ct_model']]
         self.queryset = self.model._base_manager.all()
 
@@ -68,7 +80,7 @@ class ProductDetailView(CartMixin, CategoryDetailMixin, DetailView):
 class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
 
     model = Category
-    queryset = Category.object.all()
+    queryset = Category.objects.all()
     context_object_name = 'category'
     template_name = 'category_detail.html'
     slug_url_kwarg = 'slug'
@@ -77,7 +89,7 @@ class CategoryDetailView(CartMixin, CategoryDetailMixin, DetailView):
     # Контекст который я хочу вывести в моеё вьюшке(аналогия с функцией)
     # Возвращает словарь, представляющий контекст шаблона. Предоставленные аргументы ключевого слова будут составлять возвращаемый контекст.
     def get_context_data(self, **kwargs):
-        logger.info("CategoryDetailView")
+        logger.info("CategoryDetailView") # pragma: no cover
         context = super().get_context_data(**kwargs)
         context['cart'] = self.cart
 
@@ -88,7 +100,7 @@ class AddToCartView(LoginRequiredMixin, CartMixin, View):
 
 
     def get(self, request, *args, **kwargs):
-        logger.info("AddToCartView")
+        logger.info("AddToCartView") # pragma: no cover
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         # content_type Тип содержимого, используемый для ответа.
         content_type = ContentType.objects.get(model=ct_model)
@@ -101,7 +113,7 @@ class AddToCartView(LoginRequiredMixin, CartMixin, View):
         if created:
             self.cart.products.add(cart_product)
 
-        recalc_cart(self.cart)
+        # recalc_cart(self.cart)
 
         '''HttpResponseRedirect означает, что ответ будет перенаправлять нас куда-то'''
         return HttpResponseRedirect('/cart/')
@@ -111,16 +123,14 @@ class DeleteFromCartView(LoginRequiredMixin, CartMixin, View):
 
 
     def get(self, request, *args, **kwargs):
-        logger.info("DeleteFromCartView")
+        logger.info("DeleteFromCartView") # pragma: no cover
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
         product = content_type.model_class().objects.get(slug=product_slug)
         cart_product = CartProduct.objects.get(
             user=self.cart.owner, cart=self.cart, content_type=content_type, object_id=product.id
         )
-        self.cart.products.remove(cart_product)
         cart_product.delete()
-        recalc_cart(self.cart)
 
         return HttpResponseRedirect('/cart/')
 
@@ -129,8 +139,8 @@ class CartView(LoginRequiredMixin, CartMixin, View):
 
 
     def get(self, request, *args, **kwargs):
-        logger.info("CartView")
-        categories = Category.object.get_categories_for_left_sidebar()
+        logger.info("CartView") # pragma: no cover
+        categories = Category.objects.get_categories_for_left_sidebar()
         context = {
             'cart': self.cart,
             'categories': categories
@@ -144,7 +154,7 @@ class ChangeQTYView(LoginRequiredMixin, CartMixin, View):
 
 
     def post(self, request, *args, **kwargs):
-        logger.info("ChangeQTYView")
+        logger.info("ChangeQTYView") # pragma: no cover
         ct_model, product_slug = kwargs.get('ct_model'), kwargs.get('slug')
         content_type = ContentType.objects.get(model=ct_model)
         product = content_type.model_class().objects.get(slug=product_slug)
@@ -154,7 +164,7 @@ class ChangeQTYView(LoginRequiredMixin, CartMixin, View):
         quality = int(request.POST.get('quality'))
         cart_product.quality = quality
         cart_product.save()
-        recalc_cart(self.cart)
+        # recalc_cart(self.cart)
 
         return HttpResponseRedirect('/cart/')
 
@@ -163,8 +173,8 @@ class CheckoutView(LoginRequiredMixin, CartMixin, View):
 
 
     def get(self, request, *args, **kwargs):
-        logger.info("CheckoutView")
-        categories = Category.object.get_categories_for_left_sidebar()
+        logger.info("CheckoutView") # pragma: no cover
+        categories = Category.objects.get_categories_for_left_sidebar()
         form = OrderForm(request.POST or None)
         context = {
             'cart': self.cart,
@@ -181,9 +191,9 @@ class MakeOrderView(LoginRequiredMixin, CartMixin, View):
     # декоратор нужен для того, чтобы при ошибке все откатилось
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        logger.info("MakeOrderView")
+        logger.info("MakeOrderView") # pragma: no cover
         form = OrderForm(request.POST or None)
-        customer = Customer.objects.get(user=request.user)
+        customer = request.user.customer
 
         if form.is_valid():
             new_order = form.save(commit=False)
@@ -201,7 +211,6 @@ class MakeOrderView(LoginRequiredMixin, CartMixin, View):
             self.cart.save()
             new_order.cart = self.cart
             new_order.save()
-            customer.orders.add(new_order)
             messages.add_message(request, messages.INFO, 'Дзякуй, за замову! Мэнэджар з Вамі звяжацца')
 
             return HttpResponseRedirect('/')

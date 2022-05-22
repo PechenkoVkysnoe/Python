@@ -7,7 +7,7 @@ class ShortAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'category':
-            return ModelChoiceField(Category.object.filter(slug='shorts'))
+            return ModelChoiceField(Category.objects.filter(slug='shorts'))
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -16,7 +16,7 @@ class DressAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'category':
-            return ModelChoiceField(Category.object.filter(slug='dresses'))
+            return ModelChoiceField(Category.objects.filter(slug='dresses'))
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -25,7 +25,7 @@ class LongShortAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'category':
-            return ModelChoiceField(Category.object.filter(slug='longshorts'))
+            return ModelChoiceField(Category.objects.filter(slug='longshorts'))
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
