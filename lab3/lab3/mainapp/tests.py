@@ -1,30 +1,18 @@
 import logging
 from decimal import Decimal
-from unittest import mock
 from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from django.utils import timezone
 
-from mainapp.forms import OrderForm
 
 from .models import (
-    Category, 
-    Short, 
-    LongShort, 
-    Dress, 
+    Category,
+    LongShort,
     CartProduct, 
-    Cart, 
-    Customer,
+    Cart,
     Order
 )
-from .views import CategoryDetailView, CheckoutView, AddToCartView, BaseView, DeleteFromCartView
-from PIL import Image
-from django.core.files.base import File
-from io import BytesIO
-from django.contrib.messages.storage.fallback import FallbackStorage
-from django.conf import settings
+
 from django.test import Client
 
 User = get_user_model()
@@ -73,7 +61,7 @@ class BasePageTests(TestCase):
             'phone': 12321123,
             'address':'asdfasdf',
             'buying_type': Order.BUYING_TYPE_DELIVERY,
-            'order_data': '22.05.2022',
+            'order_data': '2022-05-28',
             'comment': 'asdfasdf'
         }
         response = self.client.post(reverse('make_order'), data)

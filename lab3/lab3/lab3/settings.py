@@ -55,7 +55,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'lab3.urls'
-'''LOGGING = {
+'''
+LOGGING = {
     'version': 1,
     'handlers': {
         'console': {
@@ -70,7 +71,8 @@ ROOT_URLCONF = 'lab3.urls'
     'root': {
         'handlers': ['console'],
     }
-}'''
+}
+'''
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -99,6 +101,7 @@ LOGGING = {
         },
     }
 }
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -157,7 +160,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'be'
 
 TIME_ZONE = 'Europe/Minsk'
 

@@ -6,9 +6,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.utils import timezone
-
+from phonenumber_field.formfields import PhoneNumberField
 from .managers import CategoryManager
-
+from django.core.validators import RegexValidator
 
 User = get_user_model()
 
@@ -87,20 +87,15 @@ class Cart(models.Model):
         return self.products.all().count()
 
 class Customer(models.Model):
-    '''
-        Customer model
-    '''
+
     user = models.OneToOneField(User, verbose_name='Customer', related_name='customer', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Customer: {self.user.first_name} "{self.user.username}" {self.user.last_name}'
 
-# джанга
+# джанго сигналы
 @receiver(post_save, sender=User)
 def update_user_customer(instance, created, **kwargs):
-    '''
-        Create Customer model when User model creating
-    '''
 
     if created:
         Customer.objects.create(user=instance)
@@ -168,7 +163,8 @@ class Order(models.Model):
     first_name = models.CharField(max_length=255, verbose_name='Імя')
     second_name = models.CharField(max_length=255, verbose_name='Прозвішча')
     third_name = models.CharField(max_length=255, verbose_name='Імя па бацьку')
-    phone = models.CharField(max_length=20, verbose_name='Тэлефон', default='')
+    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
+    phone = models.CharField(validators = [phoneNumberRegex], max_length=20, verbose_name='Тэлефон', default='')
     cart = models.ForeignKey(Cart, verbose_name='Кошык', on_delete=models.CASCADE, null=True, blank=True)
     address = models.CharField(max_length=255, verbose_name='Адрас', null=True, blank=True)
     status = models.CharField(max_length=255, verbose_name='Статус замовы', choices=STATUS_CHOICES, default=STATUS_NEW)
@@ -180,7 +176,7 @@ class Order(models.Model):
         default=BUYING_TYPE_SELF
     )
     comment = models.TextField(verbose_name='Каментарый да заказу', null=True, blank=True)
-    order_data = models.DateField(verbose_name='Дата атрымання замовы', default=timezone.now())
+    order_data = models.DateField(verbose_name='Дата атрымання замовы', default=timezone.now)
 
     def __str__(self):
         return f'{self.id}'

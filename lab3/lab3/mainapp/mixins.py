@@ -29,7 +29,8 @@ class CategoryDetailMixin(SingleObjectMixin):
 
 
 class CartMixin(View):
-
+    #Реализация по умолчанию анализирует HTTP метод запроса
+    # и делегирует его соответствующему методу класса; GET будет обработан методом get(), запрос POST делегируется к post()
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             customer = Customer.objects.filter(user=request.user).first()

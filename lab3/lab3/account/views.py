@@ -11,3 +11,8 @@ class SignUpView(generic.CreateView):
     # на страницу входа в систему после успешной регистрации
     success_url = reverse_lazy('login')
     template_name = 'singup.html'
+
+class CabinetView(generic.View):
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'cabinet.html')
