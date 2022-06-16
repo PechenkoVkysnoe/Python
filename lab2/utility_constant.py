@@ -1,0 +1,6 @@
+JSON = 'json'
+YAML = 'yaml'
+TOML = 'toml'
+FORMAT_JSON = '.json'
+FORMAT_YAML = '.yaml'
+FORMAT_TOML = '.toml'
